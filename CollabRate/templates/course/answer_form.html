@@ -1,0 +1,240 @@
+{% extends 'collabrate/base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block title %}Answer Form{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'course/course_landing.css' %}">
+<link rel="stylesheet" href="{% static 'course/sidenav.css' %}">
+<link rel="stylesheet" href="{% static 'course/answer_form.css' %}">
+<style>
+  .top-banner {
+      background-color: {{ course.color }};
+      border-radius: 8px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      width: 90%;
+  }
+  .top-banner h1 {
+      margin-left: 12px;
+      font-size: 32px;
+      color: black;
+  }
+  .question-section {
+      margin-bottom: 2rem;
+  }
+  .w-90 {
+    width: 90%;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+    {% include "course/sidenav.html" %}
+    <div class="w-90 p-4 d-flex flex-column">
+        <div style="flex: 0 0 8.5%;">
+            <div class="pb-3">
+                <h1>
+                    {{ course.code }} <strong>|</strong> {{ course.title }} <strong>|</strong> {{ form_obj.name|capfirst }}
+                </h1>
+            </div>
+            <hr class="m-0" style="opacity: 100%;">
+        </div>
+        <!-- <div class="top-banner">
+            <h1>{{ course.code }} | {{ course.title }}</h1>
+        </div>
+        <div class="mt-4">
+            <h2>{{ form_obj.name }}</h2>
+            <p>Due: {{ form_obj.due_date }} at {{ form_obj.due_time }}</p>
+        </div> -->
+        <div class="d-flex w-100" style="flex: 0 0 91.5%;">
+            <form method="post" class="w-100" action="">
+                {% csrf_token %}
+
+                {# Peer selector (only if not self_evaluate) #}
+                <div class="p-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fa-solid fa-exclamation-circle me-2"></i>
+                        <label for="evaluee_id"><small class="text-muted">Select a group member to evaluate.</small></label>
+                    </div>
+                    <select
+                    name="evaluee_id" id="evaluee_id"
+                    class="form-select"
+                    onchange="if(this.value) window.location='?evaluee_id='+this.value;"
+                    required
+                    >
+                    <option
+                        value=""
+                        disabled
+                        {% if not selected_evaluee_id %}selected{% endif %}
+                    >
+                        -- choose peer --
+                    </option>
+
+                    {% for peer in potential_peers %}
+                        <option
+                        value="{{ peer.id }}"
+                        {% if peer.id == selected_evaluee_id %}selected{% endif %}
+                        >
+                        {{ peer.get_full_name|default:peer.username }}
+                        </option>
+                    {% endfor %}
+                    </select>
+
+                </div>
+
+                <!-- Likert Scale -->
+                <!-- <div class="question-section">
+                    <h3>Likert Scale Questions</h3>
+                    {% for likert in likert_questions %}
+                    <div class="mb-3">
+                        <label><strong>{{ forloop.counter }}. {{ likert.question }}</strong></label>
+                        <div>
+                        {% for val in likert_scale_values %}
+                            <div class="form-check form-check-inline">
+                            <input
+                                class="form-check-input"
+                                type="radio"
+                                name="likert_{{ likert.id }}"
+                                value="{{ val }}"
+                                {% if existing_likert|dict_get:likert.id == val %}checked{% endif %}
+                                {% if not selected_evaluee_id %}required{% endif %}
+                            >
+                            <label class="form-check-label">
+                                {{ likert|get_option:val }}  {# you could write a template filter to map 1→option_1, etc. #}
+                            </label>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div> -->
+                <div class="p-4 me-5 custom-scroll" style="overflow-y: auto; max-height: 60vh;">
+                <div class="question-section">
+                    <h3>Likert Scale Questions</h3>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fa-solid fa-exclamation-circle me-2"></i>
+                        <small class="text-muted">To select an answer, click on the corresponding square.</small>
+                    </div>
+                    {% for likert in likert_questions %}
+                    <div class="mb-3 shadow" style="border-radius: 7.5px; width: 80%;">
+                        <div class="d-flex align-items-center justify-content-start px-4 pt-3">
+                            <div style="width: 50px; height: 50px; border: 1px solid #000; 
+                                display: flex; align-items: center; justify-content: center; 
+                                margin-right: 1rem;">
+                                <span style="font-size: 1.5rem;">{{ forloop.counter }}</span>
+                            </div>
+
+                            <!-- Question input in the middle -->
+                            <div class="mx-2 w-70" style="border-bottom: solid 1px black; background: transparent; min-width: 50%;">
+                                <label style="font-size: 1.25rem; padding-left: 0.5rem;">{{ likert.question }}</label>
+                            </div>
+                        </div>
+                        <div class="likert-options px-4 py-4">
+                        {% for val, color in likert_choices %}
+                            <div class="likert-option" style="--box-color: {{ color }};">
+                            <input
+                                type="radio"
+                                id="likert_{{ likert.id }}_{{ val }}"
+                                name="likert_{{ likert.id }}"
+                                value="{{ val }}"
+                                {% if existing_likert|dict_get:likert.id == val %}checked{% endif %}
+                                {% if not selected_evaluee_id %}required{% endif %}
+                            />
+                            <label for="likert_{{ likert.id }}_{{ val }}">
+                                {{ likert|get_option:val }}
+                            </label>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+
+                <!-- Open-Ended  -->
+                <div class="question-section">
+                    <h3>Open-Ended Questions</h3>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fa-solid fa-exclamation-circle me-2"></i>
+                        <small class="text-muted">Type answers into the provided text box.</small>
+                    </div>
+                    {% for open_q in open_questions %}
+                    <div class="mb-3 shadow" style="border-radius: 7.5px; width: 80%;">
+                        <div class="d-flex align-items-center justify-content-start px-4 pt-3">
+                            <div style="width: 50px; height: 50px; border: 1px solid #000; 
+                                display: flex; align-items: center; justify-content: center; 
+                                margin-right: 1rem;">
+                                <span style="font-size: 1.5rem;">{{ forloop.counter }}</span>
+                            </div>
+
+                            <!-- Question input in the middle -->
+                            <div class="mx-2" style="border-bottom: solid 1px black; background: transparent; min-width: 80%;">
+                                <label style="font-size: 1.25rem; padding-left: 0.5rem;">{{ open_q.question }}</label>
+                            </div>
+                        </div>
+                        <div class="px-4 py-4" style="background: transparent; margin-left: calc(50px + 1rem);">
+                            <textarea
+                                name="open_{{ open_q.id }}"
+                                class="form-control"
+                                placeholder="Enter Answer Here"
+                                aria-label="Open Ended Response"
+                                rows="1"
+                                style="font-size: 1.15rem;
+                                    padding: 0.65rem;
+                                    background: transparent;
+                                    resize: none;
+                                    overflow-y: auto;
+                                    border: none;
+                                    border-radius: 0;
+                                    height: 7.5rem;
+                                    box-shadow: none;"
+                            >{{ existing_open|dict_get:open_q.id|default_if_none:"" }}</textarea>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fa-solid fa-exclamation-circle me-2"></i>
+                    <small class="text-muted due-datetime" data-due-datetime="{{ form_obj.due_datetime|date:'c' }}"></small>
+                </div>
+                <button type="submit" class="btn submit-response-btn shadow">Submit<span class="ms-2">&rarr;</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // find every element with that class
+        document.querySelectorAll(".due-datetime").forEach(el => {
+        const iso = el.dataset.dueDatetime;  
+        if (!iso) return;
+
+        const dt = new Date(iso);
+
+        // e.g. “April 30, 2025”
+        const date = dt.toLocaleDateString(undefined, {
+            month: "long",
+            day:   "numeric",
+            year:  "numeric"
+        });
+
+        // e.g. “3:20 PM”
+        const time = dt.toLocaleTimeString(undefined, {
+            hour:   "numeric",
+            minute: "2-digit",
+            hour12: true
+        });
+
+        el.textContent = `Due: ${date} at ${time}`;
+        });
+    });
+</script>
+{% endblock %}

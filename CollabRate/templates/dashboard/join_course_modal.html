@@ -1,0 +1,26 @@
+<div class="modal fade" id="joinCourseModal" tabindex="-1" aria-labelledby="joinCourseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content glass-modal-content">
+            <form method="post" action="{% url 'join_course' %}">
+                {% csrf_token %}
+                <div class="m-4 rounded shadow bg-solid">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="joinCourseModalLabel">Join Course</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3 d-flex align-items-center justify-content-center">
+                            <input type="text" class="form-control course-form-input join-course-form-input"
+                                id="courseCode" name="join_code" placeholder="Enter join code" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 justify-content-end create-course-footer">
+                    <button type="submit" class="create-course-btn shadow">
+                        <i class="fa-solid fa-arrow-right create-course-icon"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

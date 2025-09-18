@@ -1,0 +1,32 @@
+{% extends 'collabrate/base.html' %}
+{% load static socialaccount %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'accounts/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid login-container px-0">
+  <div class="row gx-0 h-100">
+    <div class="col-md-6 left-panel">
+      <img 
+        src="{% static 'collabrate/images/eval.png' %}" 
+        alt="Illustration" 
+        class="img-fluid w-80 h-80">
+    </div>
+
+    <div class="col-md-6 right-panel d-flex flex-column justify-content-center align-items-center">
+      <h1 class="display-5 mb-5 text-center">
+        Your team evaluation solutions are <strong>one click</strong> away.
+      </h1>
+      <form method="post" action="{% provider_login_url 'google' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn google-login-btn">
+          Sign in with Google
+          <img src="{% static 'collabrate/images/google.png' %}" alt="Google logo" class="google-icon">
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-y: hidden;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.gap {
+    gap: 2vw;
+}
+
+.notif {
+    width: 65vw;
+}
+
+#wrapper {
+    width: 100%;
+    height: 80vh;
+    margin: auto;
+    overflow: hidden;
+}
+
+.scrollbar {
+    height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.force-overflow {
+    min-height: 100%;
+}
+
+.scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}

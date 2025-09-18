@@ -1,0 +1,44 @@
+{% load static %}
+<a href="{% if user.user_type == 'student' %}{% url 'course_detail' course.join_code %}{% else %}{% url 'create_form' course.join_code %}{% endif %}" class="text-decoration-none text-reset">
+    <div class="card border-0 shadow rounded-lg overflow-hidden"
+        style="width: 100%; height: 35vh; display: flex; flex-direction: column; align-items: center; border-radius: 16px;">
+        <div class="p-4 bg-light w-100" style="max-width: 100%; height: 17.5vh; border-radius: 16px 16px 0 0;">
+            <div class="d-flex justify-content-between align-items-start">
+                <h5 class="fw-bold mb-1">{{ course.code }}</h5>
+                <div class="dropdown">
+                    <i class="fas fa-ellipsis-v course-card-menu-icon" id="courseMenu{{ course.join_code }}"
+                        data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;"></i>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="courseMenu{{ course.join_code }}">
+                        <li>
+                            {% if user.user_type == "professor" %}
+
+                            <form method="post" action="{% url 'delete_course' course.join_code %}">
+                                {% csrf_token %}
+
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-trash me-1"></i> Delete Course
+                                </button>
+                            </form>
+                            {% else %}
+                            <form method="post" action="{% url 'leave_course' course.join_code %}">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-sign-out-alt me-1"></i> Leave Course
+                                </button>
+                            </form>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <p class="text-muted">{{ course.title }}</p>
+        </div>
+
+
+        <div class="p-3 d-flex justify-content-between w-100"
+            style="background-color: {{ course.color|default:'#4CAF50' }}; color: white; border-radius: 0 0 16px 16px; height: 17.5vh; width: 100%;">
+            <span><i class="fas fa-users"></i> {{ course.student_count }}</span>
+            <span>{{ course.semester }} {{ course.year }}</span>
+        </div>
+    </div>
+</a>

@@ -1,0 +1,142 @@
+{% extends 'collabrate/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'course/course_landing.css' %}">
+<link rel="stylesheet" href="{% static 'course/sidenav.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+    {% include "course/sidenav.html" %}
+
+    {% if user.user_type == "student" %}
+    {% if team_forms %}
+    <div class="main-container p-4">
+        <div style="flex: 0 0  8.5%;">
+            <div class="pb-3">
+                <h1>
+                    {{ course.code }} <strong>|</strong> {{ course.title }}
+                </h1>
+            </div>
+            <hr class="m-0 pb-4" style="opacity: 100%;">
+        </div>
+        <div class="w-70 p-4 me-5 custom-scroll" style="overflow-y: auto; max-height: 75vh; margin-top: 2.5vh;">
+            {% for grp in team_forms %}
+            <h2 class="section-title">Team: {{ grp.team.name|capfirst }}</h2>
+
+            <h3>To Do</h3>
+            {% if grp.todo_forms %}
+            {% for form in grp.todo_forms %}
+            <a href="{% url 'answer_form' join_code=course.join_code form_id=form.id %}"
+                style="text-decoration:none; color:inherit;">
+                <div class="card">
+                    <div class="info">
+                        <p>{{ form.name|capfirst }} | {{ grp.team.name|capfirst }}</p>
+                        <small
+                            class="card-text due-datetime"
+                            data-due-datetime="{{ form.due_datetime|date:'c' }}"
+                        >
+                            <!-- will be filled in by JS -->
+                        </small>
+                    </div>
+                    <span class="dot red"></span>
+                </div>
+            </a>
+            {% endfor %}
+            {% else %}
+            <p>No forms assigned to {{ grp.team.name|capfirst }}.</p>
+            {% endif %}
+
+            <h3>Feedback</h3>
+            {% if grp.released_forms %}
+            {% for form in grp.released_forms %}
+            <a href="{% url 'peer_results' join_code=course.join_code form_id=form.id %}"
+                class="text-decoration-none text-reset">
+                <div class="card">
+                    <div class="info">
+                        <p>{{ form.name|capfirst }} | {{ grp.team.name|capfirst }}</p>
+                    </div>
+                    <span class="dot green"></span>
+                </div>
+            </a>
+            {% endfor %}
+            {% else %}
+            <p>No feedback released for {{ grp.team.name|capfirst }} yet.</p>
+            {% endif %}
+
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="main-container">
+        <div class="course-header" style="background-color: {{ course.color }};">
+            <b>{{ course.code }}</b> | {{ course.title }}
+        </div>
+        <p class="mt-4">You are <strong>not</strong> assigned to a team yet.</p>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="main-container p-4">
+        <details class="jump-back-card shadow" open>
+          <summary class="jump-back-summary">
+            <div class="d-flex align-items-center">
+              <i class="fa-solid fa-file-lines fa-lg me-2"></i>
+              <div>
+                {{ latest_form.name|capfirst }}<br>
+                <small
+                    class="card-text due-datetime"
+                    data-due-datetime="{{ form.due_datetime|date:'c' }}"
+                >
+                    <!-- will be filled in by JS -->
+                </small>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-down expand-icon"></i>
+          </summary>
+    
+          <div class="jump-back-details">
+            <p>Self Evaluate: {{ latest_form.self_evaluate|yesno:"Yes,No" }}</p>
+            <p>Likert Questions: {{ latest_form.num_likert }}</p>
+            <p>Open Ended Questions: {{ latest_form.num_open_ended }}</p>
+            <p>Created at: {{ latest_form.created_at|date:"m/d/Y g:i A" }}</p>
+            <p>Status: {{ latest_form.get_state_display }}</p>
+          </div>
+        </details>
+    </div>
+    {% endif %}
+
+
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // find every element with that class
+        document.querySelectorAll(".due-datetime").forEach(el => {
+        const iso = el.dataset.dueDatetime;  
+        if (!iso) return;
+
+        const dt = new Date(iso);
+
+        // e.g. “April 30, 2025”
+        const date = dt.toLocaleDateString(undefined, {
+            month: "long",
+            day:   "numeric",
+            year:  "numeric"
+        });
+
+        // e.g. “3:20 PM”
+        const time = dt.toLocaleTimeString(undefined, {
+            hour:   "numeric",
+            minute: "2-digit",
+            hour12: true
+        });
+
+        el.textContent = `Due: ${date} at ${time}`;
+        });
+    });
+</script>
+{% endblock %}

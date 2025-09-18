@@ -1,0 +1,70 @@
+{% extends 'collabrate/base.html' %}
+{% block title %}Create Form{% endblock %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'course/create_form_info.css' %}">
+    <link rel="stylesheet" href="{% static 'course/course_landing.css' %}">
+    <link rel="stylesheet" href="{% static 'course/sidenav.css' %}">
+    <style>
+        .top-banner {
+            background-color: {{ course.color }}; 
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+
+    <div class="d-flex col-md-3">
+        {% include "course/sidenav.html" %}
+    </div>
+
+    <div class="col-md-9">
+        <div class="form-info mt-4" style="width: 100vw; margin-left: 24px;">
+            <div class="top-banner">
+                <h1><strong>{{ course.code }} | </strong>{{ course.title }}</h1> 
+            </div>
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <div class="new-form-label">
+                    <label for="formName" class="form-label"><strong>Form name:</strong></label>
+                    <input type="text" id="formName" name="form_name" class="form-control" required placeholder="Untitled form" value="{{ form.name }}" />
+                    <label for="formName" class="pencil"><i class="fa-solid fa-pencil"></i></label>
+                </div>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" style="background-color: {{ course.color }};" type="checkbox" id="selfEvaluateToggle" name="self_evaluate" {% if form.self_evaluate %}checked{% endif %}>
+                    <label class="form-check-label" for="selfEvaluateToggle">Require that students self-evaluate</label>
+                </div>
+
+                <div class="question-count">
+                    <label for="num_likert" class="form-label"><strong>Likert-Scale Questions:</strong></label>
+                    <input type="number" id="num_likert" name="num_likert" class="form-control" required min="0" step="1" value="{{ form.num_likert }}">
+                </div>
+
+                <div class="question-count">
+                    <label for="num_open" class="form-label"><strong>Open-Ended Questions:</strong></label>
+                    <input type="number" id="num_open" name="num_open" class="form-control" required min="0" step="1" value="{{ form.num_open }}">
+                </div>
+
+                <div class="due-label">
+                    <label for="due_date" class="form-label"><strong>Due Date:</strong></label>
+                    <input type="date" id="due_date" name="due_date" class="form-control" required value="{{ form.due_date|date:'Y-m-d' }}">
+                </div>
+
+                <div class="due-label">
+                    <label for="due_time" class="form-label"><strong>Due Time:</strong></label>
+                    <input type="time" id="due_time" name="due_time" class="form-control" required value="{{ form.due_time|time:'H:i'|default:'23:59' }}">
+                </div>
+
+                <button type="submit" class="btn btn-success">Continue</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

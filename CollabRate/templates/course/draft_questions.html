@@ -1,0 +1,300 @@
+{% extends 'collabrate/base.html' %}
+{% block title %}Draft Questions{% endblock %}
+{% load static %}
+{% load custom_tags %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'course/manage_forms.css' %}">
+    <link rel="stylesheet" href="{% static 'course/course_landing.css' %}">
+    <link rel="stylesheet" href="{% static 'course/sidenav.css' %}">
+    <style>
+        .question-card {
+            background-color: white;
+            border-radius: 0.6rem;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.25rem;
+            position: relative;
+            color: black;
+        }
+        .form-control:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+    {% include "course/sidenav.html" %}
+    <div class="w-90 p-4 d-flex flex-column">
+        <!-- Header Section -->
+        <div style="flex: 0 0 8.5%;">
+            <div class="pb-3">
+                <h1>
+                    {{ course.code }} <strong>|</strong> {{ course.title }} <strong>|</strong> Draft Questions
+                </h1>
+            </div>
+            <hr class="m-0" style="opacity: 100%;">
+        </div>
+        <!-- Main Content Section -->
+        <div class="d-flex flex-row" style="flex: 0 0 91.5%;">
+            <!-- Left Column: Questions Form -->
+            <div class="w-70 p-4 me-5 custom-scroll" style="overflow-y: auto; max-height: 75vh; margin-top: 2.5vh;">
+                <div class="content">
+                    <form method="POST" action="{% url 'draft_questions' join_code=course.join_code course_form_id=course_form.id %}">
+                        {% csrf_token %}
+                        <!-- LIKERT QUESTIONS -->
+                        <div class="d-flex flex-column my-4" style="padding-left: 6rem;">
+                            <h2 class="form-label" style="font-size: 1.5rem;">
+                                Likert Questions
+                            </h2>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fa-solid fa-exclamation-circle me-2"></i>
+                                <small class="text-muted">Revise Questions and Answer Choices</small>
+                            </div>
+                        </div>
+                        {% if course_form.num_likert > 0 %}
+                            {% for i in course_form.num_likert|times %}
+                                {% if forloop.last %}
+                                    <p id="scroll-likert"></p>
+                                {% endif %}
+                                {% with current_likert=likert_qs|get_item:forloop.counter0 %}
+                                <!-- Card container (no default borders for a cleaner look) -->
+                                <div id="scroll-likert-{{ forloop.counter0 }}"
+                                    class="question-card mb-3 shadow mx-auto p-0"
+                                    style="width: 80%;
+                                            border: none;
+                                            border-radius: 7.5px;">
+                                    <!-- Top row: question number, question input, and delete button -->
+                                    <div class="d-flex align-items-center justify-content-start px-3 pt-3">
+                                        
+                                        <!-- Question number box -->
+                                        <div style="min-width: 45px; height: 45px; border: 1px solid #000; 
+                                                    display: flex; align-items: center; justify-content: center; 
+                                                    margin-right: 1rem;">
+                                            <span>{{ forloop.counter }}</span>
+                                        </div>
+                                        
+                                        <!-- Question input in the middle -->
+                                        <div class="mx-2 w-70" style="border-bottom: solid 1px black; background: transparent;">
+                                            <input type="text"
+                                                name="likert_question_{{ i }}"
+                                                class="form-control border-0"
+                                                placeholder="Enter Question Here"
+                                                aria-label="Question Title"
+                                                style="font-size: 1.2rem; background: transparent;"
+                                                value="{% if current_likert %}{{ current_likert.question }}{% endif %}">
+                                        </div>
+                                        
+                                        <!-- "X" delete button on the right -->
+                                        <button type="submit"
+                                                name="action"
+                                                value="delete_likert_{{ forloop.counter0 }}"
+                                                class="btn text-danger position-absolute"
+                                                style="font-size: 2.75rem; margin: 0; padding: 0; right: 15px; top: -5px;">
+                                            &times;
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Likert options: colored bars with label inputs to the right -->
+                                    <div class="px-3 py-4" style="display: flex; flex-direction: column;">
+                                        {% for option_num in "12345"|make_list %}
+                                            <!-- One row per Likert option -->
+                                            <div class="d-flex align-items-center">
+                                                <!-- Colored bar -->
+                                                <div style="width: 45px; height: 45px; margin-right: 1.5rem; box-shadow: 0 0 2px rgba(0, 0, 0, 0.3); background-color:
+                                                    {% if option_num == '1' %}{{ course_form.color_1 }}
+                                                    {% elif option_num == '2' %}{{ course_form.color_2 }}
+                                                    {% elif option_num == '3' %}{{ course_form.color_3 }}
+                                                    {% elif option_num == '4' %}{{ course_form.color_4 }}
+                                                    {% elif option_num == '5' %}{{ course_form.color_5 }}
+                                                    {% endif %}
+                                                "></div>
+                                                
+                                                <!-- Label input with a bottom border (mimicking a horizontal line) -->
+                                                <div style="border-bottom: 1px solid #000; width: 40%;">
+                                                    <input type="text" class="form-control border-0 p-0" style="background: transparent;"
+                                                        name="likert_{{ i }}_label_{{ option_num }}"
+                                                        value="{% if current_likert %}{% if option_num == '1' %}{{ current_likert.option_1 }}{% elif option_num == '2' %}{{ current_likert.option_2 }}{% elif option_num == '3' %}{{ current_likert.option_3 }}{% elif option_num == '4' %}{{ current_likert.option_4 }}{% elif option_num == '5' %}{{ current_likert.option_5 }}{% endif %}{% else %}{% if option_num == '1' %}Strongly Disagree{% elif option_num == '2' %}Disagree{% elif option_num == '3' %}Neutral{% elif option_num == '4' %}Agree{% elif option_num == '5' %}Strongly Agree{% endif %}{% endif %}">
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <!-- End of one Likert question card -->
+                                {% endwith %}
+                            {% endfor %}
+                        {% endif %}
+
+                        <!-- Hidden field for num_likert -->
+                        <input type="hidden" name="num_likert" value="{{ course_form.num_likert }}">
+
+                        <!-- "Add Likert Question" button remains the same -->
+                        <div class="d-flex align-items-center justify-content-center w-100">
+                            <button type="submit" name="action" value="add_likert" class="btn mt-3 p-3" 
+                                style="background-color: #8ed2a9; width: 80%; color: #0a6531;">
+                                <i class="fa-solid fa-plus" style="font-size: 2rem;"></i>
+                            </button>
+                        </div>
+    
+                        <!-- OPEN-ENDED QUESTIONS -->
+                        <div class="d-flex flex-column my-4 pt-5" style="padding-left: 6rem;">
+                            <h2 class="form-label" style="font-size: 1.5rem;">
+                                Open Ended Questions
+                            </h2>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fa-solid fa-exclamation-circle me-2"></i>
+                                <small class="text-muted">Draft Questions</small>
+                            </div>
+                        </div>
+                        {% if course_form.num_open_ended > 0 %}
+                            {% for i in course_form.num_open_ended|times %}
+                                {% if forloop.last %}
+                                    <p id="scroll-open-ended"></p>
+                                {% endif %}
+                                {% with current_open_ended=open_ended_qs|get_item:forloop.counter0 %}
+                                <div id="scroll-open-ended-{{ forloop.counter0 }}"
+                                    class="question-card mb-3 shadow mx-auto p-0"
+                                    style="width: 80%; border: none; border-radius: 7.5px;">
+                                    <div class="d-flex align-items-start justify-content-start p-4 position-relative">
+                                        
+                                        <!-- Question number box -->
+                                        <div style="min-width: 45px; height: 45px; border: 1px solid #000; 
+                                                    display: flex; align-items: center; justify-content: center; 
+                                                    margin-right: 1rem;">
+                                            <span>{{ forloop.counter }}</span>
+                                        </div>
+
+                                        <!-- Multi‑line question input -->
+                                        <div class="mx-2 w-75" style="background: transparent;">
+                                            <textarea
+                                                name="open_ended_question_{{ i }}"
+                                                class="form-control"
+                                                placeholder="Enter Question Here"
+                                                aria-label="Question Title"
+                                                rows="1"
+                                                style="font-size: 1rem;
+                                                    padding: 0.65rem;
+                                                    background: transparent;
+                                                    resize: none;
+                                                    overflow-y: auto;
+                                                    border: none;
+                                                    border-radius: 0;
+                                                    height: 7.5rem;"
+                                        >{% if current_open_ended %}{{ current_open_ended.question }}{% endif %}</textarea>
+                                        </div>
+
+                                        <!-- "X" delete button -->
+                                        <button type="submit"
+                                                name="action"
+                                                value="delete_open_ended_{{ forloop.counter0 }}"
+                                                class="btn text-danger position-absolute"
+                                                style="font-size: 2.75rem; margin: 0; padding: 0; right: 15px; top: -5px;">
+                                        &times;
+                                        </button>
+                                    </div>
+                                </div>
+                                {% endwith %}
+                            {% endfor %}
+                        {% endif %}
+                        <!-- Hidden field for num_open -->
+                        <input type="hidden" name="num_open" value="{{ course_form.num_open_ended }}">
+                        <!-- Add new Open Ended Question -->
+                        <div class="d-flex align-items-center justify-content-center w-100">
+                            <button type="submit" name="action" value="add_open_ended" class="btn mt-3 p-3" 
+                                style="background-color: #8ed2a9; width: 80%; color: #0a6531;">
+                                <i class="fa-solid fa-plus" style="font-size: 2rem;"></i>
+                            </button>
+                        </div>
+                        <div class="position-relative mt-5 mb-4 page-navigation-full" style="min-height: 50px;">
+                            <!-- Truly centered 1 | 2 navigation -->
+                            <div class="position-absolute top-50 start-50 translate-middle d-flex align-items-center page-navigation">
+                                <a href="{% url 'edit_info' join_code=course.join_code course_form_id=course_form.pk %}" class="previous-page-btn">1</a>
+                                <span class="divider">|</span>
+                                <span class="current-page">2</span>
+                                {% if course_form.state == 'published' %}
+                                    <span class="divider">|</span>
+                                    <a href="{% url 'view_form_responses' join_code=course.join_code course_form_id=course_form.pk %}" class="previous-page-btn">3</a>
+                                {% endif %}
+                            </div>
+                        
+                            <!-- Right-aligned Save/Publish icons -->
+                            <div class="d-flex align-items-center justify-content-end gap-4" style="height: 100%;">
+                                <button type="submit" name="action" value="save" class="icon-btn" id="scroll-save" title="Save Form">
+                                    <i class="fa-regular fa-floppy-disk"></i>
+                                </button>
+                                <span class="divider">|</span>
+                                <button type="submit" name="action" value="publish" class="icon-btn" title="Publish Form" style="padding-right: 5%;">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        
+                        <!-- <div class="d-flex justify-content-center align-items-center mt-5 mb-4 page-navigation">
+                            <a href="{% url 'edit_info' join_code=course.join_code course_form_id=course_form.pk %}" class="previous-page-btn">1</a>
+                            <span class="divider">|</span>
+                            <span class="current-page">2</span>
+                        </div> -->
+                        <!-- Bottom Buttons -->
+                        <!-- <div class="text-end mt-4">
+                            <div class="text-end mt-4">
+                                <a href="{% url 'edit_info' join_code=course.join_code course_form_id=course_form.pk %}"
+                                   class="btn btn-warning px-4 py-2" style="font-weight: 500;">
+                                    Edit Info
+                                </a>
+                            </div>
+                            <button type="submit" name="action" value="save" id="scroll-save"
+                                    class="btn btn-primary px-4 py-2" style="font-weight: 500;">
+                                Save Form <span class="ms-1">&#x25BC;</span>
+                            </button>
+                        </div>
+                        <div class="text-end mt-4">
+                            <button type="submit" name="action" value="publish" class="btn btn-primary px-4 py-2"
+                                    style="font-weight: 500;">
+                                Publish Form <span class="ms-1">&#x25BC;</span>
+                            </button>
+                        </div> -->
+                    </form>
+                </div>
+            </div>
+            <!-- Right Column: Sidebar -->
+            <div class="w-30">
+                {% include "course/view_forms_sidebar.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // read the `scroll` query param
+    const params = new URLSearchParams(window.location.search);
+    const key = params.get('scroll');
+    if (!key) return;  // nothing to do
+
+    // determine which anchor ID you want
+    const targetId = 'scroll-' + key;  // so scroll=likert → #scroll-likert
+    const panel = document.querySelector('.custom-scroll');
+    if (!panel) return;
+
+    const target = panel.querySelector('#' + targetId);
+    if (!target) return;
+
+    // undo any window jump
+    window.scrollTo(0, 0);
+
+    // compute the offset of the target inside the panel
+    const panelRect = panel.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const offset = targetRect.top - panelRect.top + panel.scrollTop;
+
+    // scroll the panel
+    panel.scrollTop = offset;
+  });
+</script>
+{% endblock %}

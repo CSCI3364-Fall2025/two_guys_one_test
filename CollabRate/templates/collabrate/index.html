@@ -1,0 +1,18 @@
+{% extends 'collabrate/base.html' %}
+{% load socialaccount static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'collabrate/index.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="landing-section py-5">
+  <div class="container text-center">
+    <h1 class="landing-heading mb-4">Collaboration and accountability made easy.</h1>
+    <a href="{% provider_login_url 'google' %}" class="btn btn-primary btn-lg landing-btn mb-5">Get Started</a>
+    <div>
+      <img class="landing-img img-fluid" src="{% static 'collabrate/images/collab.png' %}" alt="Team collaboration illustration">
+    </div>
+  </div>
+</section>
+{% endblock %}

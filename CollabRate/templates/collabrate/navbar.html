@@ -1,0 +1,24 @@
+{% load socialaccount %}
+<nav class="navbar" style="height: 8vh;">
+    <div class="navbar-left" style="margin-left: 1vw;"> 
+        <a href="/" class="logo" style="font-size: 28px; font-weight: bold;">CollabRate</a>
+        <!-- <div class="color-bar" style="height: 6px; width: 150%; margin-left: 5px;">
+            <div class="color1"></div>
+            <div class="color2"></div>
+            <div class="color3"></div>
+            <div class="color4"></div>
+            <div class="color5"></div>
+        </div> -->
+    </div>
+    <div class="navbar-right" style="margin-right: 15px;"> 
+        {% if user.is_authenticated %}
+        <a href="{% url 'account_logout' %}" class="logout-btn text-decoration-none text-reset">
+            <i class="fas fa-user-circle"></i> Logout
+        </a>
+        {% else %}
+        <a href="{% provider_login_url 'google' %}" class="login-btn">
+            <i class="fas fa-user-circle"></i> Login
+        </a>
+        {% endif %}
+    </div>
+</nav>

@@ -1,0 +1,115 @@
+/* Container for time picker elements */
+.time-picker-container {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  
+  /* Time display styling */
+  .time-picker-container .time-display {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    font-size: 1.75rem;
+    white-space: nowrap;
+  }
+
+  .time-picker-container #am-pm-selector {
+    width: 10%;
+    display: flex;
+    justify-content: left;
+    font-size: 1.15rem;
+    color: black;
+    margin-right: 5%;
+  }
+  
+  /* Container for the sliders, stacked vertically */
+  .time-picker-container .sliders {
+    width: 65%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* Common slider styling for horizontal sliders */
+  .time-picker-container .sliders input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    background: transparent;
+    outline: none;
+  }
+  
+  /* Slider track styling */
+  .time-picker-container .sliders input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 1px;
+    background: #000;
+    border-radius: 2px;
+  }
+  .time-picker-container .sliders input[type="range"]::-moz-range-track {
+    width: 100%;
+    height: 1px;
+    background: #000;
+    border-radius: 2px;
+  }
+  .time-picker-container .sliders input[type="range"]::-ms-track {
+    width: 100%;
+    height: 1px;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+  }
+  .time-picker-container .sliders input[type="range"]::-ms-fill-lower,
+  .time-picker-container .sliders input[type="range"]::-ms-fill-upper {
+    background: #000;
+    border-radius: 2px;
+  }
+  
+  /* Slider thumb styling (blue, square) */
+  .time-picker-container .sliders input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #ddd;
+    margin-top: -10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .time-picker-container .sliders input[type="range"]::-webkit-slider-thumb:hover {
+    background-color: #8ed2a9;
+  }
+
+  .time-picker-container .sliders input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #ddd;
+    margin-top: -10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .time-picker-container .sliders input[type="range"]::-moz-range-thumb:hover {
+    background-color: #8ed2a9;
+  }
+
+  .time-picker-container .sliders input[type="range"]::-ms-thumb {
+    width: 20px;
+    height: 20px;
+    background: #ddd;
+    margin-top: -10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .time-picker-container .sliders input[type="range"]::-ms-thumb:hover {
+    background-color: #8ed2a9;
+  }

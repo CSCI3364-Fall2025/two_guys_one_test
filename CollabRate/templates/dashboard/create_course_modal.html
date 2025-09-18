@@ -1,0 +1,67 @@
+<!-- templates/dashboard/create_course_modal.html -->
+<div class="modal fade" id="createCourseModal" tabindex="-1" aria-labelledby="createCourseModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content glass-modal-content">
+      <form method="post" action="{% url 'create_course' %}">
+        {% csrf_token %}
+        <div class="m-4 rounded shadow bg-solid">
+          <div class="modal-header">
+            <h4 class="modal-title" id="createCourseModalLabel">Create a Course</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <div class="row g-3 mb-4">
+              <div class="col-md-5">
+                <input type="text" name="code" class="form-control course-form-input" placeholder="Enter Course Identifier"
+                  required>
+              </div>
+              <div class="col-md-4">
+                <select name="semester" class="form-select course-form-input" required>
+                  <option value="" disabled selected>Semester</option>
+                  <option value="Spring">Spring</option>
+                  <option value="Fall">Fall</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <input type="number" name="year" class="form-control course-form-input" placeholder="Year" required>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="row g-3 mb-4">
+                <div class="col-md-11">
+                  <input type="text" name="title" class="form-control course-form-input" placeholder="Enter Course Title"
+                    required />
+                </div>
+                <div class="col-md-1">
+                  <label for="colorPicker" class="form-label visually-hidden">Theme Color</label>
+                  <input type="color" id="colorPicker" name="color" class="form-control color-picker"
+                    value="#000000" title="Choose theme color" />
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="m-4 rounded shadow bg-solid">
+          <div class="modal-header">
+            <h4>Invite via Email</h4>
+          </div>
+          <div class="modal-body">
+            <input id="invite_email" name="invite_email" class="form-control course-form-input"
+              placeholder="Enter email address" />
+          </div>
+        </div>
+
+        <div class="modal-footer border-0 justify-content-end create-course-footer">
+          <button type="submit" class="create-course-btn shadow">
+            <i class="fa-solid fa-arrow-right create-course-icon"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

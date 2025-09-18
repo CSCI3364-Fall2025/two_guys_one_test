@@ -1,0 +1,103 @@
+{% extends 'collabrate/base.html' %}
+{% block title %}Peer Results{% endblock %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'dashboard/peer_results.css' %}">
+<link rel="stylesheet" href="{% static 'course/course_landing.css' %}">
+<link rel="stylesheet" href="{% static 'course/sidenav.css' %}">
+<style>
+  .barchart-container {
+    display: flex;
+    height: 3rem;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    border-radius: 7.5px;
+  }
+  .barchart-segment {
+    height: 100%;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+    {% include "course/sidenav.html" %}
+    <div class="main-container p-4">
+
+          <!-- Header Section -->
+          <div style="flex: 0 0 8.5%;">
+            <div class="pb-3">
+                <h1>
+                    {{ course.code }} <strong>|</strong> {{ course.title }} <strong>|</strong> Review Feedback
+                </h1>
+            </div>
+            <hr class="m-0" style="opacity: 100%;">
+        </div>
+
+        <h1 class="mt-4">Your Peer Assessment Results</h1>
+
+        <h2 class="mt-4">Overall Average Score</h2>
+        <p><strong>{{ score }}/5</strong></p>
+
+        <h2 class="mt-4">Likert Questions</h2>
+        {% if barchart_data %}
+          {% for item in barchart_data %}
+            <div class="d-flex align-items-center mb-4">
+              <!-- Question + average -->
+              <div style="width:25%; min-width:200px;">
+                <strong>{{ item.question }}</strong><br>
+                Avg: {{ item.avg }} / 5
+              </div>
+              <!-- Flex-bar showing distribution -->
+              <div class="flex-grow-1 barchart-container shadow">
+                {% for bar in item.bars %}
+                  <div
+                    class="barchart-segment"
+                    style="width: {{ bar.width }}; background-color: {{ bar.color }};">
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>No Likert responses yet.</p>
+        {% endif %}
+
+        
+        <h2 class="mt-4">Peer Feedback</h2>
+        <div class="feedback-box">
+            {% for comment in feedback %}
+                <p>"{{ comment }}"</p>
+            {% empty %}
+                <p>No feedback available yet.</p>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+{% for item in barchart_data %}
+  <div class="d-flex align-items-center mb-4">
+    <!-- Left: question text + average -->
+    <div style="width:25%; min-width:200px;">
+      <strong>{{ item.question }}</strong><br>
+      Avg: {{ item.avg }}/5
+    </div>
+
+    <!-- Right-> the 5‐segment bar -->
+    <div class="flex-grow-1 d-flex" style="height:1rem; overflow:hidden; border:1px solid #ddd;">
+      {% for bar in item.bars %}
+        <div
+          style="
+            width: {{ bar.width }};
+            background-color: {{ bar.color }};
+            height:100%;
+          "
+        ></div>
+      {% endfor %}
+    </div>
+  </div>
+{% endfor %}
+
+{% endblock %} 

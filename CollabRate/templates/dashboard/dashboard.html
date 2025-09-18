@@ -1,0 +1,67 @@
+{% extends 'collabrate/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'dashboard/course_modal.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/sidenav.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/course_card.css' %}">
+<link href="https://unpkg.com/@yaireo/tagify/dist/tagify.css" rel="stylesheet">
+<script src="https://unpkg.com/@yaireo/tagify"></script>
+{% endblock %}
+
+{% block content %}
+{% include "dashboard/join_course_modal.html" %}
+{% include "dashboard/create_course_modal.html" %}
+
+<div class="d-flex">
+    <!-- Include the Sidebar -->
+    {% include "dashboard/sidenav.html" %}
+
+    <!-- Main Content -->
+    <div class="container pt-4 ps-2">
+
+        <div class="container mb-4 ps-0 d-flex align-items-center gap">
+            <h1 class="mb-0">Dashboard</h1>
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags != 'success' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show mb-0 notif"
+                role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <hr class="m-0" />
+
+        <div id="wrapper">
+            <div class="scrollbar">
+                <div class="force-overflow">
+                    <div class="row w-100 pb-5 ms-0">
+                        {% for course in courses %}
+                        <div class="col-md-4 p-4">
+                            {% include "dashboard/course_card.html" %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    new Tagify(document.getElementById('invite_email'), {
+        delimiters: ", ",
+        pattern: /^[A-Za-z0-9._%+-]+@bc\.edu$/,
+        dropdown: { enabled: 0 },
+        keepInvalidTags: false
+    });
+</script>
+{% endblock %}

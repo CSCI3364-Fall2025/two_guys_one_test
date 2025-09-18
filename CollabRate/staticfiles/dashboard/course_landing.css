@@ -1,0 +1,77 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-y: hidden;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.main-container {
+    flex: 1;
+    padding: 1rem 2rem 2.5rem 1rem;
+}
+
+.course-header {
+    padding: 1.75rem 2.5rem;
+    color: black;
+    font-size: 1.3rem;
+    border-radius: 0.4rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.course-header b {
+    font-weight: 600;
+}
+
+.section-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    color: black;
+}
+
+.card {
+    background-color: #f2f0ef;
+    border-radius: 0.6rem;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    max-width: 520px;
+    position: relative;
+    color: black;
+}
+
+.card .info p {
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0;
+    color: black;
+}
+
+.card .info small {
+    color: #3a3a3a;
+    font-size: 0.875rem;
+}
+
+.dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.dot.red {
+    background-color: #f1675d;
+}
+
+.dot.green {
+    background-color: #62c06f;
+}

@@ -1,0 +1,437 @@
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'course/calendar.css' %}">
+<link rel="stylesheet" href="{% static 'course/timepicker.css' %}">
+{% endblock %}
+
+<div class="calendar">
+    <div class="header">
+        <button id="prevBtn" type="button">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <div class="monthYear" id="monthYear"></div>
+        <button id="nextBtn" type="button">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    </div>
+    <div class="days">
+        <div class="day">Mon</div>
+        <div class="day">Tue</div>
+        <div class="day">Wed</div>
+        <div class="day">Thu</div>
+        <div class="day">Fri</div>
+        <div class="day">Sat</div>
+        <div class="day">Sun</div>
+    </div>
+    <div class="dates" id="dates"></div>
+    <div class="time-picker-container p-2">
+        <div class="time-display" id="time-display">12:00</div>
+        <div class="pe-2" id="am-pm-selector">AM</div>
+        <div class="sliders">
+            <input type="range" id="hour-slider" min="0" max="23" step="1" value="0">
+            <input type="range" id="minute-slider" min="0" max="59" step="1" value="0">
+        </div>
+    </div>
+</div>
+
+<!-- <input type="hidden" id="due_date" name="due_date" required
+    value="{% if course_form and course_form.due_date %}{{ course_form.due_date|date:'Y-m-d' }}{% else %}{% endif %}">
+
+<input type="hidden" id="due_time" name="due_time" required
+    value="{% if course_form and course_form.due_time %}{{ course_form.due_time|time:'H:i' }}{% else %}{% endif %}"> -->
+
+<input
+    type="hidden"
+    id="due_datetime"
+    name="due_datetime"
+    required
+    value="{% if course_form and course_form.due_datetime %}{{ course_form.due_datetime|date:'c' }}{% endif %}"
+>
+<!-- 
+<script>
+    const monthYearElement = document.getElementById('monthYear');
+    const datesElement = document.getElementById('dates');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const dueDateInput = document.getElementById('due_date');
+
+    let currentDate = new Date();
+    let selectedDate = new Date();
+
+    if (dueDateInput && dueDateInput.value) {
+        const [year, month, day] = dueDateInput.value.split('-');
+        selectedDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        currentDate = new Date(selectedDate);
+    }
+
+    const updateCalendar = () => {
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth();
+        const firstDay = new Date(currentYear, currentMonth, 1);
+        const lastDay = new Date(currentYear, currentMonth + 1, 0);
+        const totalDays = lastDay.getDate();
+        const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+        const lastDayIndex = lastDay.getDay() === 0 ? 6 : lastDay.getDay() - 1;
+
+        const monthYearString = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+        monthYearElement.textContent = monthYearString;
+
+        let datesHTML = '';
+
+        if (firstDayIndex > 0) {
+            const prevLastDay = new Date(currentYear, currentMonth, 0).getDate();
+            for (let i = firstDayIndex; i > 0; i--) {
+                const dateNumber = prevLastDay - i + 1;
+                datesHTML += `<div class="date inactive">${dateNumber}</div>`;
+            }
+        }
+
+        for (let i = 1; i <= totalDays; i++) {
+            const date = new Date(currentYear, currentMonth, i);
+            const activeClass = date.toDateString() === selectedDate.toDateString() ? 'active' : '';
+            datesHTML += `<div class="date ${activeClass}" data-day="${i}">${i}</div>`;
+        }
+
+        const remainingDays = 7 - ((firstDayIndex + totalDays) % 7);
+        if (remainingDays < 7) {
+            for (let i = 1; i <= remainingDays; i++) {
+                datesHTML += `<div class="date inactive">${i}</div>`;
+            }
+        }
+
+        datesElement.innerHTML = datesHTML;
+    };
+
+    prevBtn.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        updateCalendar();
+    });
+
+    nextBtn.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        updateCalendar();
+    });
+
+    datesElement.addEventListener('click', (e) => {
+        if (e.target.classList.contains('date') && !e.target.classList.contains('inactive')) {
+            const currentActive = datesElement.querySelector('.active');
+            if (currentActive) {
+                currentActive.classList.remove('active');
+            }
+            e.target.classList.add('active');
+
+            const clickedDay = parseInt(e.target.getAttribute('data-day'), 10);
+            selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), clickedDay);
+
+            if (dueDateInput) {
+                dueDateInput.value = selectedDate.toISOString().split('T')[0];
+            }
+        }
+    });
+
+    updateCalendar();
+</script> -->
+<!-- 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // --- Calendar Setup ---
+        const monthYearElement = document.getElementById('monthYear');
+        const datesElement = document.getElementById('dates');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const dueDateInput = document.getElementById('due_date');
+        const dueTimeInput = document.getElementById('due_time');
+
+        let currentDate = new Date();
+        let selectedDate = new Date();
+
+        if (dueDateInput && dueDateInput.value) {
+            const [year, month, day] = dueDateInput.value.split('-');
+            selectedDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            currentDate = new Date(selectedDate);
+        }
+
+        // compute “today” at midnight
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        function updateCalendar() {
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth();
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay  = new Date(currentYear, currentMonth + 1, 0);
+            const totalDays = lastDay.getDate();
+            const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+
+            monthYearElement.textContent =
+                currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+            let datesHTML = '';
+
+            // previous‐month “padding”
+            if (firstDayIndex > 0) {
+                const prevLast = new Date(currentYear, currentMonth, 0).getDate();
+                for (let i = firstDayIndex; i > 0; i--) {
+                    datesHTML += `<div class="date inactive">${prevLast - i + 1}</div>`;
+                }
+            }
+
+            // current‐month days
+            for (let i = 1; i <= totalDays; i++) {
+                const date       = new Date(currentYear, currentMonth, i);
+                const isBefore   = date < today;
+                const isSelected = date.toDateString() === selectedDate.toDateString();
+
+                // build class list
+                let cls = ['date'];
+                if (isBefore)    cls.push('inactive');
+                else if (isSelected) cls.push('active');
+
+                // only give data-day if not inactive
+                const dataAttr = isBefore ? '' : ` data-day="${i}"`;
+                datesHTML += `<div class="${cls.join(' ')}"${dataAttr}>${i}</div>`;
+            }
+
+            // next‐month “padding”
+            const filled = firstDayIndex + totalDays;
+            const rem    = (7 - (filled % 7)) % 7;
+            for (let i = 1; i <= rem; i++) {
+                datesHTML += `<div class="date inactive">${i}</div>`;
+            }
+
+            datesElement.innerHTML = datesHTML;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            updateCalendar();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            updateCalendar();
+        });
+
+        datesElement.addEventListener('click', (e) => {
+            if (e.target.classList.contains('date') && !e.target.classList.contains('inactive')) {
+                const currentActive = datesElement.querySelector('.active');
+                if (currentActive) {
+                    currentActive.classList.remove('active');
+                }
+                e.target.classList.add('active');
+
+                const clickedDay = parseInt(e.target.getAttribute('data-day'), 10);
+                selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), clickedDay);
+
+                if (dueDateInput) {
+                    dueDateInput.value = selectedDate.toISOString().split('T')[0];
+                }
+            }
+        });
+
+        updateCalendar();
+
+         // --- Time Picker Setup ---
+        const hourSlider   = document.getElementById("hour-slider");
+        const minuteSlider = document.getElementById("minute-slider");
+
+        function updateTime() {
+            let rawHour   = parseInt(hourSlider.value, 10);
+            const minuteVal = parseInt(minuteSlider.value, 10);
+
+            if (rawHour === 24) rawHour = 0;
+
+            const period = rawHour < 12 ? "AM" : "PM";
+            let hour12 = rawHour % 12;
+            if (hour12 === 0) hour12 = 12;
+
+            const minuteStr = minuteVal < 10 ? "0" + minuteVal : minuteVal;
+            document.getElementById("time-display").textContent    = hour12 + ":" + minuteStr;
+            document.getElementById("am-pm-selector").textContent = period;
+
+            const hourHidden = rawHour < 10 ? "0" + rawHour : rawHour;
+            dueTimeInput.value = hourHidden + ":" + minuteStr;
+        }
+
+        // 1) If there's an existing saved time, parse it…
+        if (dueTimeInput && dueTimeInput.value) {
+            const [h, m] = dueTimeInput.value.split(":");
+            hourSlider.value   = parseInt(h, 10);
+            minuteSlider.value = parseInt(m, 10);
+        }
+        // 2) Otherwise default to *now* (minutes rounded down to nearest 5)
+        else {
+            const now          = new Date();
+            const currentHour  = now.getHours();
+            const rawMinutes   = now.getMinutes();
+            const roundedMins  = Math.floor(rawMinutes / 5) * 5;
+
+            hourSlider.value   = currentHour;
+            minuteSlider.value = roundedMins;
+        }
+
+        // wire up events
+        hourSlider.addEventListener("input", updateTime);
+        minuteSlider.addEventListener("input", updateTime);
+
+        // initial render
+        updateTime();
+    });
+</script> -->
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Elements
+      const monthYearElement   = document.getElementById("monthYear");
+      const datesElement       = document.getElementById("dates");
+      const prevBtn            = document.getElementById("prevBtn");
+      const nextBtn            = document.getElementById("nextBtn");
+      const dueDateTimeInput   = document.getElementById("due_datetime");
+      console.log(dueDateTimeInput);
+      const hourSlider         = document.getElementById("hour-slider");
+      const minuteSlider       = document.getElementById("minute-slider");
+      const timeDisplay        = document.getElementById("time-display");
+      const ampmSelector       = document.getElementById("am-pm-selector");
+    
+      // State: one Date holds both date & time
+      let selectedDateTime = dueDateTimeInput.value
+        ? new Date(dueDateTimeInput.value)
+        : new Date();
+      let currentDate = new Date(selectedDateTime);
+    
+      // “Today” at midnight for disabling past
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+    
+      // Serialize to “YYYY-MM-DDTHH:MM”
+    //   function serialize(dt) {
+    //     const Y = dt.getFullYear();
+    //     const M = String(dt.getMonth() + 1).padStart(2, "0");
+    //     const D = String(dt.getDate()).padStart(2, "0");
+    //     const h = String(dt.getHours()).padStart(2, "0");
+    //     const m = String(dt.getMinutes()).padStart(2, "0");
+    //     return `${Y}-${M}-${D}T${h}:${m}`;
+    //   }
+
+    function serializeWithOffset(dt) {
+        const pad = n => String(n).padStart(2, "0");
+        const Y   = dt.getFullYear();
+        const M   = pad(dt.getMonth()+1);
+        const D   = pad(dt.getDate());
+        const h   = pad(dt.getHours());
+        const m   = pad(dt.getMinutes());
+        // JS returns minutes *behind* UTC; flip the sign:
+        const offsetMin = -dt.getTimezoneOffset();
+        const sign      = offsetMin >= 0 ? "+" : "-";
+        const absOff    = Math.abs(offsetMin);
+        const oh        = pad(Math.floor(absOff/60));
+        const om        = pad(absOff % 60);
+        return `${Y}-${M}-${D}T${h}:${m}${sign}${oh}:${om}`;
+    }
+    
+      function updateHidden() {
+        dueDateTimeInput.value = serializeWithOffset(selectedDateTime);
+      }
+    
+      // Draw the calendar grid for currentDate’s month
+      function updateCalendar() {
+        const Y = currentDate.getFullYear();
+        const Mo = currentDate.getMonth();
+        const firstDay   = new Date(Y, Mo, 1);
+        const lastDay    = new Date(Y, Mo + 1, 0);
+        const totalDays  = lastDay.getDate();
+        const firstIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+    
+        monthYearElement.textContent =
+          currentDate.toLocaleString("default", { month: "long", year: "numeric" });
+    
+        let html = "";
+    
+        // previous‐month padding
+        if (firstIndex > 0) {
+          const prevLast = new Date(Y, Mo, 0).getDate();
+          for (let i = firstIndex; i > 0; i--) {
+            html += `<div class="date inactive">${prevLast - i + 1}</div>`;
+          }
+        }
+    
+        // current‐month days
+        for (let d = 1; d <= totalDays; d++) {
+          const thisDate   = new Date(Y, Mo, d);
+          const isPast     = thisDate < today;
+          const isSelected = thisDate.toDateString() === selectedDateTime.toDateString();
+          const classes    = ["date"];
+          if (isPast)       classes.push("inactive");
+          else if (isSelected) classes.push("active");
+          const dataAttr = isPast ? "" : ` data-day="${d}"`;
+          html += `<div class="${classes.join(" ")}"${dataAttr}>${d}</div>`;
+        }
+    
+        // next‐month padding
+        const filled = firstIndex + totalDays;
+        const rem    = (7 - (filled % 7)) % 7;
+        for (let i = 1; i <= rem; i++) {
+          html += `<div class="date inactive">${i}</div>`;
+        }
+    
+        datesElement.innerHTML = html;
+      }
+    
+      // Month navigation
+      prevBtn.addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        updateCalendar();
+      });
+      nextBtn.addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        updateCalendar();
+      });
+    
+      // Date selection
+      datesElement.addEventListener("click", (e) => {
+        if (
+          e.target.classList.contains("date") &&
+          !e.target.classList.contains("inactive")
+        ) {
+          const day = parseInt(e.target.getAttribute("data-day"), 10);
+          selectedDateTime.setFullYear(currentDate.getFullYear());
+          selectedDateTime.setMonth(currentDate.getMonth());
+          selectedDateTime.setDate(day);
+    
+          updateCalendar();
+          updateHidden();
+        }
+      });
+    
+      // Time picker UI ↔ state
+      function updateTimeUI() {
+        let h24 = parseInt(hourSlider.value, 10);
+        const m   = parseInt(minuteSlider.value, 10);
+    
+        // display
+        const period = h24 < 12 ? "AM" : "PM";
+        let h12 = h24 % 12 || 12;
+        timeDisplay.textContent   = `${h12}:${String(m).padStart(2, "0")}`;
+        ampmSelector.textContent  = period;
+    
+        // update Date object
+        selectedDateTime.setHours(h24, m, 0, 0);
+        updateHidden();
+      }
+    
+      // init sliders from selectedDateTime
+      hourSlider.value   = selectedDateTime.getHours();
+      //   minuteSlider.value = Math.floor(selectedDateTime.getMinutes() / 5) * 5;
+      minuteSlider.value = selectedDateTime.getMinutes();
+    
+      hourSlider.addEventListener("input", updateTimeUI);
+      minuteSlider.addEventListener("input", updateTimeUI);
+    
+      // initial render
+      updateCalendar();
+      updateTimeUI();
+    });
+</script>
+    

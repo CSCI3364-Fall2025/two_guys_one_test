@@ -1,0 +1,466 @@
+/* .top-banner {
+    border-radius: 8px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    width: 95%;
+}
+
+.top-banner h1 {
+    margin-left: 12px;
+    margin-top: 10px;
+    font-size: 32px;
+    color: white;
+} */
+
+.new-form-label {
+  position: relative;
+  display: flex;
+  margin-top: 12px;
+}
+
+.new-form-label input {
+  margin-left: 12px;
+}
+
+.form-control {
+  padding-right: 30px;
+}
+
+.form-info {
+  font-size: 24px;
+}
+
+.form-info input {
+  width: 200px;
+  border: 2px solid #007bff;
+  border-radius: 4px;
+}
+
+.question-count,
+.due-label {
+  display: flex;
+}
+
+.due-label {
+  margin-top: 12px;
+}
+
+.due-label #due_time {
+  margin-left: 14px;
+  margin-bottom: 24px;
+}
+
+.due-label #due_date {
+  margin-left: 16px;
+}
+
+.question-count input {
+  width: 80px;
+}
+
+.question-count #num_likert {
+  margin-left: 28px;
+}
+
+.question-count #num_open_ended {
+  margin-left: 18px;
+}
+
+.pencil {
+  transform: translate(-32px, 4px);
+}
+
+
+
+
+/* Container for the overall progress UI */
+.progress-step-container {
+  display: flex;
+  flex-direction: column;
+  /* Stack the bars above the text/arrow row */
+  align-items: center;
+  /* Center horizontally */
+  gap: 8px;
+  margin: 16px;
+}
+
+.progress-bars {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.progress-bar {
+  width: 25%;
+  height: 5px;
+  border-radius: 4px;
+  background-color: #f2f0ef;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar-active {
+  background-color: #8ed2a9;
+}
+
+.progress-bar-inactive {
+  background-color: #f2f0ef;
+}
+
+.progress-step-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.progress-step-text {
+  font-size: 1.15rem;
+  color: #000;
+}
+
+.progress-step-arrow {
+  width: 6rem;
+  height: 3rem;
+  background-color: #8ed2a9;
+  border-radius: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.create-form-btn {
+  display: inline-block;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: #000;
+  font-weight: 500;
+  transition: transform 0.2s ease;
+}
+
+.create-form-btn:hover {
+  transform: scale(1.05);
+  text-decoration: none;
+}
+
+.content {
+  background: white;
+  box-shadow: 0 10px 15px 0 rgba(0, 0, 0, 0.37);
+  border-radius: 7.5px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+}
+
+.custom-scroll {
+  scrollbar-color: #bbb transparent;
+}
+
+/* Container to hold the input */
+.title-edit-container {
+  margin-bottom: 1rem;
+}
+
+/* Wrapper to position the pencil icon relative to the input */
+.title-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Input styling: border-bottom only to serve as an underline */
+.title-input {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #000;
+  /* Black underline */
+  outline: none;
+  font-size: 1.75rem;
+  /* Adjust for desired size */
+  padding: 0.5rem 2.5rem 0.5rem 0;
+  /* Vertical padding, extra right padding for icon spacing */
+}
+
+/* Placeholder styling (optional) */
+.title-input::placeholder {
+  color: #aaa;
+  /* Light gray, adjust as needed */
+}
+
+/* Pencil icon: positioned to the right within the same container */
+.pencil-icon {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  /* Adjust size as needed */
+  color: #000;
+  cursor: pointer;
+}
+
+.additional-controls-gap {
+  gap: 1rem;
+}
+/* Downsized toggle switch: overall dimensions 60px by 30px */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;           /* was 80px */
+  height: 30px;          /* was 40px */
+  cursor: pointer;
+}
+
+.toggle-switch input[type="checkbox"] {
+  display: none;
+}
+
+.toggle-switch-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #f2f0ef;
+  border-radius: 15px;    /* originally 20px, now 15px = 20px * 0.75 */
+  box-shadow: inset 0 0 0 1.5px #f2f0ef; /* 2px scaled down to 1.5px */
+  transition: background-color 0.3s ease-in-out;
+}
+
+.toggle-switch-handle {
+  position: absolute;
+  top: 3.75px;          /* originally 5px (5 * 0.75 = 3.75px) */
+  left: 3.75px;         /* originally 5px */
+  width: 22.5px;        /* originally 30px (30 * 0.75 = 22.5px) */
+  height: 22.5px;       /* originally 30px */
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1.5px 3.75px rgba(0, 0, 0, 0.2);  /* scales the original 0 2px 5px shadow */
+  transition: transform 0.3s ease-in-out;
+}
+
+.toggle-switch::before {
+  content: "";
+  position: absolute;
+  top: -18.75px;       /* originally -25px (25 * 0.75) */
+  right: -26.25px;      /* originally -35px (35 * 0.75) */
+  font-size: 9px;       /* originally 12px */
+  font-weight: bold;
+  color: #f2f0ef;
+  text-shadow: 0.75px 0.75px #fff;  /* scaled version of 1px 1px */
+  transition: color 0.3s ease-in-out;
+}
+
+/* When checked, update background and move the handle */
+.toggle-switch input[type="checkbox"]:checked + .toggle-switch-background {
+  background-color: #8ed2a9;
+  box-shadow: inset 0 0 0 1.5px #8ed2a9;
+}
+
+/* Move the handle when the checkbox is checked.
+   The original movement of 40px becomes 30px (40 * 0.75)
+*/
+.toggle-switch input[type="checkbox"]:checked + .toggle-switch-background .toggle-switch-handle {
+  transform: translateX(30px);  
+  box-shadow: 0 1.5px 3.75px rgba(0, 0, 0, 0.2), 0 0 0 2.25px #8ed2a9;  
+  /* The extra 3px ring (3 * 0.75 = 2.25px) is maintained */
+}
+
+/* Optional: Show "On" text when checked.
+   Adjust the right offset from -15px to -11.25px (15 * 0.75) */
+.toggle-switch input[type="checkbox"]:checked + .toggle-switch:before {
+  content: "On";
+  color: #8ed2a9;
+  right: -11.25px;
+}
+
+
+.form-label {
+  font-size: 1.25rem;
+}
+
+/***********************************
+   * 2. QUANTITY COUNTER STYLES
+   ***********************************/
+
+.quantity-counter {
+  /* Adjust spacing, font-size, alignment as needed */
+  font-size: 1.5rem;
+}
+
+.counter-ui {
+  min-width: 2rem;
+}
+
+/* The circle buttons for plus and minus */
+.circle-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  color: black;
+  background-color: #f2f0ef;
+  /* slightly darker symbol color */
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.decrement-btn:hover {
+  color: white;
+  background-color: #e75e5e;
+}
+
+.increment-btn:hover {
+  color: white;
+  background-color: #8ed2a9;
+}
+
+/* The number displayed between the minus/plus buttons */
+#quantityDisplay {
+  min-width: 20px;
+  /* so the text doesn't jump around */
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Container styling for the color picker bar */
+#customColorPickerBar {
+  display: flex;
+}
+
+.custom-color-input {
+  width: 50px;               /* Set width as desired */
+  height: 50px;              /* Set height as desired */
+  border: none;
+  border-radius: 0;          /* Square corners */
+  cursor: pointer;
+  padding: 0;
+  
+  /* Remove default browser appearance */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  
+  /* Optional: subtle box shadow for interactivity */
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+/* For WebKit browsers: remove default padding and style the swatch */
+.custom-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.custom-color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 0;
+}
+
+/* For Mozilla browsers: remove default border and apply circular shape */
+.custom-color-input::-moz-color-swatch {
+  border: none;
+  border-radius: 0;
+}
+
+.custom-color-input:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.color-picker-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* Center the input and label horizontally */
+}
+
+.next-page {
+  font-size: 1.75rem;
+}
+
+.next-page-container {
+  gap: 1.25rem;
+}
+
+.w-90 {
+  width: 90%;
+}
+.w-70 {
+  width: 70%;
+}
+.w-30 {
+  width: 30%;
+}
+
+
+
+
+.previous-page-btn, .next-page-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+
+.previous-page-btn:hover, .next-page-btn:hover {
+  text-decoration: underline;
+}
+
+
+
+.page-navigation-full {
+  width: 100%;
+  position: relative;
+}
+
+.page-navigation {
+  font-size: 1.5rem;
+  font-weight: 500;
+  gap: 1.5rem;
+}
+
+.current-page {
+  text-decoration: underline;
+  padding-bottom: 0.2rem;
+}
+
+.divider {
+  font-weight: 400;
+  font-size: 2rem;
+}
+
+.previous-page-btn, .next-page-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+
+.previous-page-btn:hover, .next-page-btn:hover {
+  text-decoration: underline;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1.5rem;
+  color: black;
+  cursor: pointer;
+}
+

@@ -1,0 +1,45 @@
+{% extends 'collabrate/base.html' %}
+{% load static %}
+
+{% block title %}Sign Up{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'accounts/signup.css' %}">
+{% endblock %}
+{% block content %}
+{% if error %}
+<p style="color: red;">{{error}}</p>
+{% endif %}
+<div class="login-container">
+    <div class="left-panel">
+        <img class="login-img" src="{% static 'collabrate/images/org.png' %}">
+    </div>
+    <div class="right-panel">
+        <form method="post" class="w-100 d-flex flex-column align-items-center">
+            {% csrf_token %}
+            {% for field in form %}
+                {{ field.as_hidden }}
+            {% endfor %}
+            <h1 class="user-type-header">What is your role?</h1>
+            <button type="button" class="user-type-btn w-75 mb-3" onclick="setUserTypeAndSubmit('student')">
+                <i class="fa fa-soid fa-user user-type-icon"></i>
+                I'm a Student
+            </button>
+            <button type="button" class="user-type-btn w-75 mb-3" onclick="setUserTypeAndSubmit('professor')">
+                <i class="fa-solid fa-graduation-cap user-type-icon"></i>
+                I'm a Professor
+            </button>
+            <button type="button" class="user-type-btn w-75 mb-3" onclick="setUserTypeAndSubmit('professor')">
+                <i class="fa fa-soid fa-gears user-type-icon"></i>
+                I'm an Administrator
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+function setUserTypeAndSubmit(role) {
+    document.getElementsByName("user_type")[0].value = role;
+    document.forms[0].submit();
+}
+</script>
+{% endblock %}

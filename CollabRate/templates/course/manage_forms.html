@@ -1,0 +1,318 @@
+{% extends 'collabrate/base.html' %}
+{% block title %}{% if course_form %}Edit Form{% else %}Create Form{% endif %}{% endblock %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'course/manage_forms.css' %}">
+<link rel="stylesheet" href="{% static 'course/course_landing.css' %}">
+<link rel="stylesheet" href="{% static 'course/sidenav.css' %}">
+
+<style>
+    .color-select {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .color-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .color-box {
+        width: 30px;
+        height: 30px;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+    {% include "course/sidenav.html" %}
+
+    <div class="w-90 p-4 d-flex flex-column">
+        <div style="flex: 0 0  8.5%;">
+            <div class="pb-3">
+                <h1>
+                    {{ course.code }} <strong>|</strong> {{ course.title }} <strong>|</strong> {% if form_expired%}Review Responses{% elif course_form %}Edit Form{% else %}Create Form{% endif %}
+                </h1>
+            </div>
+            <hr class="m-0" style="opacity: 100%;">
+        </div>
+        <div class="d-flex flex-row" style="flex: 0 0 91.5%;">
+            <div class="w-70 p-4 me-5 custom-scroll" style="overflow-y: auto; max-height: 75vh; margin-top: 2.5vh;">
+                <div class="content">
+                    <form method="post"
+                        action="{% if course_form %}{% url 'edit_info' join_code=course.join_code course_form_id=course_form.pk %}{% else %}{% url 'create_form' join_code=course.join_code %}{% endif %}">
+                        {% csrf_token %}
+                        <div class="title-edit-container m-5">
+                            <div class="title-input-wrapper">
+                                <input type="text" id="peerEvalTitle" class="title-input"
+                                    placeholder="Untitled Peer Evaluation Form" name="form_name"
+                                    value="{% if course_form %}{{ course_form.name }}{% else %}{% endif %}">
+                                <i class="fa-solid fa-pencil pencil-icon" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                        <div class="additional-controls my-4 ps-5">
+                            <div
+                                class="additional-controls-gap form-check form-switch mb-3 d-flex align-items-center p-0">
+                                <div class="d-flex flex-column">
+                                    <label class="form-label" for="selfEvaluateToggle">
+                                        Require that Students Self-Evaluate
+                                    </label>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fa-solid fa-exclamation-circle me-2"></i>
+                                        <small class="text-muted">Each Student Must Assess their own Performance</small>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch" for="selfEvaluateToggle">
+                                    <!-- hidden by CSS but still focusable/clickable -->
+                                    <input
+                                      type="checkbox"
+                                      id="selfEvaluateToggle"
+                                      name="self_evaluate"
+                                      value="True"
+                                      hidden
+                                      {% if course_form and course_form.self_evaluate %}checked{% endif %}
+                                    />
+                                  
+                                    <!-- your custom UI -->
+                                    <div class="toggle-switch-background">
+                                      <div class="toggle-switch-handle"></div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="additional-controls my-4 ps-5">
+                            <!-- Open-Ended Questions Counter -->
+                            <div class="additional-controls-gap d-flex align-items-center mb-1">
+                                <label class="form-label">
+                                    Open Ended Questions
+                                </label>
+                                <div class="quantity-counter d-flex align-items-center">
+                                    <!-- Decrement Button -->
+                                    <button type="button" class="circle-btn decrement-btn"
+                                        onclick="decrementCounter('openEndedCounter', 'num_open_ended')">
+                                        &minus;
+                                    </button>
+
+                                    <!-- Display the quantity -->
+                                    <span id="openEndedCounter" class="mx-2 d-flex justify-content-center counter-ui">
+                                        {% if course_form %}{{ course_form.num_open_ended }}{% else %}1{% endif %}
+                                    </span>
+
+                                    <!-- Increment Button -->
+                                    <button type="button" class="circle-btn increment-btn"
+                                        onclick="incrementCounter('openEndedCounter', 'num_open_ended')">
+                                        &plus;
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Hidden input field to send the value via the form post request -->
+                            <input type="number" id="num_open_ended" name="num_open_ended" class="form-control d-none"
+                                required min="0" step="1"
+                                value="{% if course_form %}{{ course_form.num_open_ended }}{% else %}1{% endif %}">
+
+                            <!-- Likert Scale Questions Counter -->
+                            <div class="additional-controls-gap d-flex align-items-center mb-4">
+                                <label class="form-label">
+                                    Likert Scale Questions
+                                </label>
+                                <div class="quantity-counter d-flex align-items-center">
+                                    <!-- Decrement Button -->
+                                    <button type="button" class="circle-btn decrement-btn"
+                                        onclick="decrementCounter('likertCounter', 'num_likert')">
+                                        &minus;
+                                    </button>
+
+                                    <!-- Display the quantity -->
+                                    <span id="likertCounter" class="mx-2 d-flex justify-content-center counter-ui">
+                                        {% if course_form %}{{ course_form.num_likert }}{% else %}3{% endif %}
+                                    </span>
+
+                                    <!-- Increment Button -->
+                                    <button type="button" class="circle-btn increment-btn"
+                                        onclick="incrementCounter('likertCounter', 'num_likert')">
+                                        &plus;
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Hidden input field to send the value via the form post request -->
+                            <input type="number" id="num_likert" name="num_likert" class="form-control d-none" required
+                                min="0" step="1"
+                                value="{% if course_form %}{{ course_form.num_likert }}{% else %}3{% endif %}">
+
+                            <label class="form-label">Likert Color Range</label>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fa-solid fa-exclamation-circle me-2"></i>
+                                <small class="text-muted">Styling will be Applied across all Likert Questions</small>
+                            </div>
+                            <div id="customColorPickerBar">
+                                <!-- Each input is a color picker with its default value -->
+                                <div class="color-picker-item">
+                                    <input type="color" id="picker1" name="color_1" class="custom-color-input"
+                                        value="{% if course_form %}{{ course_form.color_1 }}{% else %}{{ default_colors.color_1 }}{% endif %}">
+                                    <small class="text-muted">1</small>
+                                </div>
+                                <div class="color-picker-item">
+                                    <input type="color" id="picker2" name="color_2" class="custom-color-input"
+                                        value="{% if course_form %}{{ course_form.color_2 }}{% else %}{{ default_colors.color_2 }}{% endif %}">
+                                    <small class="text-muted">2</small>
+                                </div>
+                                <div class="color-picker-item">
+                                    <input type="color" id="picker3" name="color_3" class="custom-color-input"
+                                        value="{% if course_form %}{{ course_form.color_3 }}{% else %}{{ default_colors.color_3 }}{% endif %}">
+                                    <small class="text-muted">3</small>
+                                </div>
+                                <div class="color-picker-item">
+                                    <input type="color" id="picker4" name="color_4" class="custom-color-input"
+                                        value="{% if course_form %}{{ course_form.color_4 }}{% else %}{{ default_colors.color_4 }}{% endif %}">
+                                    <small class="text-muted">4</small>
+                                </div>
+                                <div class="color-picker-item">
+                                    <input type="color" id="picker5" name="color_5" class="custom-color-input"
+                                        value="{% if course_form %}{{ course_form.color_5 }}{% else %}{{ default_colors.color_5 }}{% endif %}">
+                                    <small class="text-muted">5</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Time picker slider HTML inserted directly above progress-step-container -->
+                        <div class="d-flex mt-5 ps-5 flex-column">
+                            <label class="form-label">Select Due Date</label>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fa-solid fa-exclamation-circle me-2"></i>
+                                <small class="text-muted">Student Responses May be Manually Published after the Due
+                                    Date</small>
+                            </div>
+                            {% include "course/calendar.html" %}
+                        </div>
+
+                        <div class="d-flex justify-content-center align-items-center mt-5 mb-4 page-navigation">
+                            <span class="current-page">1</span>
+                            <span class="divider">|</span>
+                            <button type="submit" name="action" value="save" class="next-page-btn">2</button>
+                            {% if course_form.state == 'published' %}
+                                <span class="divider">|</span>
+                                <a href="{% url 'view_form_responses' join_code=course.join_code course_form_id=course_form.pk %}" class="previous-page-btn">3</a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="w-30">
+                {% include "course/view_forms_sidebar.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<!-- 
+<script>
+    // Wait for the DOM to be ready
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get all forms with the class 'response-form'
+        const forms = document.querySelectorAll('.response-form');
+
+        // Loop over each form
+        forms.forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Get the form data
+                const formData = new FormData(form);
+
+                // Use fetch to send data asynchronously
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value,
+                    },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Handle the response from the server (assuming JSON response)
+                        if (data.success) {
+                            // Update the response text or show a success message
+                            const messageDiv = form.querySelector('.response-message');
+                            messageDiv.style.display = 'block';
+                            messageDiv.innerHTML = 'Response saved successfully!';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
+        });
+    });
+</script> -->
+
+
+<script>
+    // function updateTime() {
+    //     let rawHour = parseInt(document.getElementById("hour-slider").value, 10);
+    //     const minuteVal = parseInt(document.getElementById("minute-slider").value, 10);
+
+    //     if (rawHour === 24) {
+    //         rawHour = 0;
+    //     }
+
+    //     const period = rawHour < 12 ? "AM" : "PM";
+
+    //     let hour12 = rawHour % 12;
+    //     if (hour12 === 0) {
+    //         hour12 = 12;
+    //     }
+
+    //     const minuteStr = minuteVal < 10 ? "0" + minuteVal : minuteVal;
+
+    //     document.getElementById("time-display").textContent = hour12 + ":" + minuteStr;
+    //     document.getElementById("am-pm-selector").textContent = period;
+
+    //     const hourHidden = rawHour < 10 ? "0" + rawHour : rawHour;
+    //     document.getElementById("due_time").value = hourHidden + ":" + minuteStr;
+    // }
+
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     const dueTimeInput = document.getElementById("due_time");
+    //     if (dueTimeInput && dueTimeInput.value) {
+    //         const [h, m] = dueTimeInput.value.split(":");
+    //         document.getElementById("hour-slider").value = parseInt(h, 10);
+    //         document.getElementById("minute-slider").value = parseInt(m, 10);
+    //     }
+    //     updateTime();
+    // });
+
+    function incrementCounter(displayID, hiddenInputID) {
+        let quantityDisplay = document.getElementById(displayID);
+        let quantity = parseInt(quantityDisplay.textContent, 10) || 0;
+        quantity++;
+        quantityDisplay.textContent = quantity;
+
+        let hiddenInput = document.getElementById(hiddenInputID);
+        if (hiddenInput) {
+            hiddenInput.value = quantity;
+        }
+    }
+
+    function decrementCounter(displayID, hiddenInputID) {
+        let quantityDisplay = document.getElementById(displayID);
+        let quantity = parseInt(quantityDisplay.textContent, 10) || 0;
+        if (quantity > 0) {
+            quantity--;
+            quantityDisplay.textContent = quantity;
+
+            let hiddenInput = document.getElementById(hiddenInputID);
+            if (hiddenInput) {
+                hiddenInput.value = quantity;
+            }
+        }
+    }
+</script>
+{% endblock %}

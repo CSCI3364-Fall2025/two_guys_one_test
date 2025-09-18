@@ -1,0 +1,58 @@
+{% load static %}
+
+<div class="d-flex flex-column vh-100 text-white" style="width: 10%; min-width: 250px; min-height: 100vh; background-color: #212121;">
+    <div class="color-bar mb-4">
+        <div class="color1"></div>
+        <div class="color2"></div>
+        <div class="color3"></div>
+        <div class="color4"></div>
+        <div class="color5"></div>
+    </div>
+    <div class="p-3">
+        {% if user.user_type == "professor" %}
+        <div class="d-flex align-items-center px-2 mb-4">
+            <i class="fas fa-user-circle fa-2x me-3"></i>
+            <span>{{ user.username|capfirst }} ({{ user.user_type|capfirst }})</span>
+        </div>
+        <!-- Professor Options -->
+        <!-- Groups -->
+        <div class="d-flex align-items-center px-2 mb-4">
+            <a href="{% url 'create_team' course.join_code %}"
+                class="text-decoration-none text-reset d-flex justify-content-center align-items-center">
+                <i class="fa-solid fa-user-group fa-1-5x me-3"></i>
+                <span>Groups</span>
+            </a>
+        </div>
+        <div class="d-flex align-items-center px-2 mb-4">
+            <a href="{% url 'create_form' course.join_code %}"
+               class="text-decoration-none text-reset d-flex justify-content-center align-items-center">
+               <i class="fa-solid fa-plus fa-1-5x me-3"></i>
+                <span>Create Form</span>
+            </a>
+        </div>
+        <div class="d-flex align-items-center px-2 mb-4">
+            <a href="{% url 'view_forms' course.join_code %}"
+               class="text-decoration-none text-reset d-flex justify-content-center align-items-center">
+               <i class="fa-solid fa-pencil fa-1-5x me-3"></i> 
+                <span>View Forms</span>
+            </a>
+        </div>
+        {% else %}
+        <div class="d-flex align-items-center px-2 mb-4">
+            <a href="{% url 'course_detail' course.join_code %}"
+                class="text-decoration-none text-reset d-flex justify-content-center align-items-center">
+                <i class="fas fa-user-circle fa-2x me-3"></i>
+                <span>{{ user.username|capfirst }} ({{ user.user_type|capfirst }})</span>
+            </a>
+        </div>
+        {% endif %}
+        <!-- Return -->
+        <div class="d-flex align-items-center px-2 mb-4">
+            <a href="{% url 'dashboard' %}"
+            class="text-decoration-none text-reset d-flex justify-content-center align-items-center">
+                <i class="fa-solid fa-rotate-left fa-1-5x me-3"></i>
+                <span>Return to Courses</span>
+            </a>
+        </div>
+    </div>
+</div>

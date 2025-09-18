@@ -1,0 +1,79 @@
+{% extends 'collabrate/base.html' %}
+{% block title %}Create Form - Questions{% endblock %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'course/create_form_questions.css' %}">
+    <link rel="stylesheet" href="{% static 'course/course_landing.css' %}">
+    <link rel="stylesheet" href="{% static 'course/sidenav.css' %}">
+    <style>
+        .top-banner {
+            background-color: {{ course.color }};
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+
+    <div class="d-flex col-md-3">
+        {% include "course/sidenav.html" %}
+    </div>
+
+    <div class="col-md-9 container mt-4" style="width: 100vw; margin-left: 24px;">
+        <div class="top-banner">
+            <h1><strong>{{ course.code }} | </strong>{{ course.title }}</h1>
+        </div>
+
+        <form method="post" action="{% url 'view_forms' join_code=course.join_code %}">
+            {% csrf_token %}
+
+            {% for i in range_likert %}
+            <div class="mb-3">
+                <label for="likert_{{ i }}" class="form-label">
+                    <strong>Likert Question {{ i|add:1 }}</strong>
+                </label>
+                <input type="text" id="likert_{{ i }}" name="likert_{{ i }}" class="form-control"
+                    required placeholder="Enter Likert Question {{ i|add:1 }}">
+            </div>
+
+            <!-- Likert scale options stacked vertically -->
+            <div class="mb-3">
+                {% for j in "12345"|make_list %}
+                <div class="likert-option">
+                    <div class="color-circle" style="background-color: 
+                        {% if j == '1' %}#872729
+                        {% elif j == '2' %}#C44B4B
+                        {% elif j == '3' %}#F2F0EF
+                        {% elif j == '4' %}#3D5A80
+                        {% elif j == '5' %}#293241
+                        {% endif %};">
+                    </div>
+                    <input type="text" id="likert_label_{{ i }}_{{ j }}"
+                        name="likert_label_{{ i }}_{{ j }}" class="form-control label-input"
+                        value="{% if j == '1' %}Strongly Disagree{% elif j == '2' %}Disagree
+                               {% elif j == '3' %}Neutral{% elif j == '4' %}Agree
+                               {% elif j == '5' %}Strongly Agree{% endif %}" required>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            {% for i in range_open %}
+            <div class="mb-3">
+                <label for="open_{{ i }}" class="form-label">
+                    <strong>Open-Ended Question {{ i|add:1 }}</strong>
+                </label>
+                <input type="text" id="open_{{ i }}" name="open_{{ i }}" class="form-control"
+                    required placeholder="Enter Open-Ended Question {{ i|add:1 }}">
+            </div>
+            {% empty %}
+            <p>No Open-Ended questions were added.</p>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-success">Save Form</button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

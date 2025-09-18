@@ -1,0 +1,43 @@
+.d-flex {
+    display: flex;
+}
+
+.main-container {
+    flex: 1;
+}
+
+.color-bar {
+    display: flex;
+    width: 100%;
+    height: 15px;
+    overflow: hidden;
+    margin: 0;
+}
+
+.color-bar > div {
+    flex: 1;
+}
+
+.color-bar .color1 {
+    background-color: #872729;
+}
+
+.color-bar .color2 {
+    background-color: #C44B4B;
+}
+
+.color-bar .color3 {
+    background-color: #F2F0EF;
+}
+
+.color-bar .color4 {
+    background-color: #3D5A80;
+}
+
+.color-bar .color5 {
+    background-color: #293241;
+}
+
+.fa-1-5x {
+    font-size: 1.5rem;
+}

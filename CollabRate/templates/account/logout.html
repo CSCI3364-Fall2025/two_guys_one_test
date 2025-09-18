@@ -1,0 +1,22 @@
+{% extends 'collabrate/base.html' %}
+{% load static %}
+
+{% block title %}Sign Out{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'accounts/signout.css' %}">
+{% endblock %}
+{% block content %}
+<div class="login-container">
+    <div class="left-panel">
+        <img class="login-img" src="{% static 'collabrate/images/eval.png' %}" alt="Sign Out Image">
+    </div>
+    <div class="right-panel d-flex flex-column justify-content-center align-items-center">
+        <h1 class="mb-4">Are you sure you want to sign out?</h1>
+        <form method="post" action="{% url 'account_logout' %}" class="w-100 d-flex flex-column align-items-center">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-lg w-75">Sign Out</button>
+        </form>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-lg w-75 mt-3">Cancel</a>
+    </div>
+</div>
+{% endblock %}
