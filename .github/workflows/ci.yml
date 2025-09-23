@@ -29,7 +29,6 @@ jobs:
           # Keep DEBUG off in CI if you want; not required for SQLite.
           DJANGO_SETTINGS_MODULE: CollabRate.main.settings
         run: |
-          cd CollabRate
-          python manage.py migrate --noinput
-          python manage.py check
-          python manage.py test -v 2
+          python CollabRate/manage.py migrate --noinput
+          python CollabRate/manage.py check
+          python CollabRate/manage.py test -v 2
