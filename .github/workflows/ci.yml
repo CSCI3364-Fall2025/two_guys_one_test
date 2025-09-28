@@ -33,4 +33,4 @@ jobs:
           cd CollabRate
           python manage.py migrate --noinput
           python manage.py check
-          python manage.py test -v 2
+          pytest
