@@ -50,6 +50,7 @@ def course(professor_user):
         professor=professor_user,
     )
 
+# URL for creating a form for a given course
 @pytest.fixture
 def create_form_url(course):
     return reverse("create_form", args=[course.join_code])
@@ -57,6 +58,7 @@ def create_form_url(course):
 
 # --------- Login required ---------
 
+# Ensure that unauthenticated users are redirected to login when accessing the form creation page
 def test_create_form_requires_login_redirects_to_login(client, create_form_url):
     resp = client.get(create_form_url)
     # Should be a redirect to login with ?next=...
@@ -66,6 +68,7 @@ def test_create_form_requires_login_redirects_to_login(client, create_form_url):
 
 # --------- GET access control ---------
 
+# Ensure the form creation page loads correctly for professors with proper context variables
 def test_get_create_form_professor_ok(client, professor_user, course, create_form_url):
     client.force_login(professor_user)
     resp = client.get(create_form_url)
@@ -76,6 +79,7 @@ def test_get_create_form_professor_ok(client, professor_user, course, create_for
     }
     assert "forms" in resp.context
 
+# Ensure students cannot access the form creation page
 def test_get_create_form_denied_for_student(client, student_user, course, create_form_url):
     client.force_login(student_user)
     resp = client.get(create_form_url, follow=True)
@@ -83,6 +87,7 @@ def test_get_create_form_denied_for_student(client, student_user, course, create
     msgs = [m.message for m in get_messages(resp.wsgi_request)]
     assert any("Access denied: Professors only." in m for m in msgs)
 
+# Ensure professors who do not own the course cannot access the form creation page
 def test_get_create_form_denied_for_non_owner_prof(client, other_professor, course, create_form_url):
     client.force_login(other_professor)
     resp = client.get(create_form_url, follow=True)
@@ -93,6 +98,7 @@ def test_get_create_form_denied_for_non_owner_prof(client, other_professor, cour
 
 # --------- POST success paths ---------
 
+# Test creating a form with all fields provided
 def test_post_create_form_success_with_all_fields(client, professor_user, course, create_form_url):
     client.force_login(professor_user)
     payload = {
@@ -123,7 +129,7 @@ def test_post_create_form_success_with_all_fields(client, professor_user, course
         "#111111", "#222222", "#333333", "#444444", "#555555"
     )
 
-
+# Test creating a form with only required fields provided
 def test_post_create_form_uses_defaults_for_missing_fields(client, professor_user, course, create_form_url):
     """
     Missing name -> 'Untitled Form'
@@ -149,6 +155,7 @@ def test_post_create_form_uses_defaults_for_missing_fields(client, professor_use
 
 # --------- POST invalid inputs ---------
 
+# Test that duplicate form names for the same course are rejected
 def test_post_create_form_invalid_date_shows_message_and_no_create(client, professor_user, course, create_form_url):
     client.force_login(professor_user)
     payload = {
@@ -163,6 +170,7 @@ def test_post_create_form_invalid_date_shows_message_and_no_create(client, profe
     msgs = [m.message for m in get_messages(resp.wsgi_request)]
     assert any("Invalid date/time format." in m for m in msgs)
 
+# Test that non-integer counts raise ValueError and do not create a form
 @pytest.mark.django_db
 def test_post_create_form_noninteger_counts_raises_value_error(
     client, professor_user, course, create_form_url
@@ -175,6 +183,7 @@ def test_post_create_form_noninteger_counts_raises_value_error(
 
 # --------- POST permissions ---------
 
+# Ensure students cannot create forms
 def test_post_create_form_denied_for_student(client, student_user, course, create_form_url):
     client.force_login(student_user)
     resp = client.post(create_form_url, data={
