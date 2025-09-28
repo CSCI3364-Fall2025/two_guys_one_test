@@ -67,12 +67,36 @@ A Django-powered peer‑review and assessment platform that allows instructors t
    pip install -r requirements.txt
    ```
 
-4. **Configure environment variables**
-   Copy `.env.example` to `.env` and fill in:
-   - `SECRET_KEY`
-   - `DATABASE_URL`
-   - `GOOGLE_OAUTH_CLIENT_ID`
-   - `GOOGLE_OAUTH_CLIENT_SECRET`
+## 4. Obtain Google OAuth2 Credentials
+
+ - Go to **[Google Cloud Console](https://console.cloud.google.com/)**.  
+ - Create a new project (or select an existing one).  
+ - Navigate to **APIs & Services → OAuth consent screen**.  
+   - Choose **External** if the app will be used outside your organization.  
+   - Fill in required info (app name, support email, etc.).  
+ - Navigate to **Credentials → Create Credentials → OAuth client ID**.  
+ - Select **Web application** as the application type.  
+ - Under **Authorized redirect URIs**, add: http://127.0.0.1:8000/oauth/complete/google-oauth2/
+ - Save and copy the **Client ID** and **Client Secret**.  
+
+---
+
+## 5. Create Superuser & Register Credentials
+
+ - **Create a Django superuser**
+```bash
+python manage.py createsuperuser
+```
+ - **Log in to the Django admin site (http://127.0.0.1:8000/admin/) with your superuser account.**
+
+ - Go to Social Applications → Add Social Application.
+
+ - Choose Google as the provider.
+
+ - Paste your Client ID and Client Secret from Google Cloud.
+
+ - Assign it to the correct site (e.g., localhost).
+
 
 ### Running the App
 
@@ -81,17 +105,12 @@ A Django-powered peer‑review and assessment platform that allows instructors t
    python manage.py migrate
    ```
 
-2. **Create a superuser**
-   ```bash
-   python manage.py createsuperuser
-   ```
-
-3. **Collect static files**
+2. **Collect static files**
    ```bash
    python manage.py collectstatic
    ```
 
-4. **Start the development server**
+3. **Start the development server**
    ```bash
    python manage.py runserver
    ```

@@ -185,14 +185,14 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {'access_type': 'offline', 'prompt': 'select_account'},
     }
 }
-#removed 'hd' : 'bc.edu'
+# Removed 'hd' : 'bc.edu'
 
 SOCIALACCOUNT_FORMS = {
     'signup': 'accounts.forms.CustomSocialSignupForm',
 }
 
-#SOCIALACCOUNT_ADAPTER = 'accounts.adapters.BCSocialAccountAdapter'
-#put back if only want bc.edu
+# SOCIALACCOUNT_ADAPTER = 'accounts.adapters.BCSocialAccountAdapter'
+# Put back if only want bc.edu
 
 # Email Validation
 
