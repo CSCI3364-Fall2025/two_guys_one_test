@@ -3,3 +3,8 @@
 
 # Ignore local SQLite database
 db.sqlite3
+
+# Python bytecode / caches
+__pycache__/
+*.py[cod]
+*$py.class
