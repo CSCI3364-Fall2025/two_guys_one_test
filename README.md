@@ -71,12 +71,12 @@ A Django-powered peer‑review and assessment platform that allows instructors t
 
  - Go to **[Google Cloud Console](https://console.cloud.google.com/)**.  
  - Create a new project (or select an existing one).  
- - Navigate to **APIs & Services → OAuth consent screen**.  
-   - Choose **External** if the app will be used outside your organization.  
-   - Fill in required info (app name, support email, etc.).  
- - Navigate to **Credentials → Create Credentials → OAuth client ID**.  
+ - Navigate to **APIs & Services → OAuth consent screen → Credentials**.  
+ - Click on the **Create Credentials** Dropdown and Select OAuth client ID.
  - Select **Web application** as the application type.  
- - Under **Authorized redirect URIs**, add: http://127.0.0.1:8000/oauth/complete/google-oauth2/
+ - Under **Authorized redirect URIs**, add:
+   - For Local Development: http://127.0.0.1:8000/accounts/google/login/callback/
+   - For Hosting a Web Application Online: {domain}/accounts/google/login/callback/
  - Save and copy the **Client ID** and **Client Secret**.  
 
 ---
