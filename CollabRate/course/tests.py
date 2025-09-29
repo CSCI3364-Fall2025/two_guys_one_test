@@ -209,3 +209,142 @@ def test_post_create_form_denied_for_non_owner_prof(client, other_professor, cou
     assert CourseForm.objects.filter(name="Wrong Owner").count() == 0
     msgs = [m.message for m in get_messages(resp.wsgi_request)]
     assert any("You do not have permission to access this course." in m for m in msgs)
+
+# ------------------- Form Edge Case Tests -------------------
+
+#fails
+#check that the form 255 limit works
+def test_post_create_form_name_too_long(client, professor_user, course, create_form_url):
+    client.force_login(professor_user)
+    payload = {"form_name": "A"*256, "num_likert": "1", "num_open_ended": "0"}
+    resp = client.post(create_form_url, data=payload, follow=True)
+    assert resp.status_code == 200
+    assert CourseForm.objects.filter(name="A"*256).count() == 0
+    msgs = [m.message for m in get_messages(resp.wsgi_request)]
+    assert any("Ensure this value has at most" in m for m in msgs)
+
+#fails
+#check if negative numbers can be used
+@pytest.mark.parametrize("field,value", [("num_likert",-1), ("num_open_ended",-5)])
+def test_post_create_form_negative_counts(client, professor_user, course, create_form_url, field, value):
+    client.force_login(professor_user)
+    payload = {"form_name": "Negative Test", field: str(value)}
+    resp = client.post(create_form_url, data=payload, follow=True)
+    assert resp.status_code == 200
+    assert CourseForm.objects.filter(name="Negative Test").count() == 0
+
+#fails
+#check if default colors apply (I thought they did, but fails)
+def test_post_create_form_empty_colors_uses_default(client, professor_user, course, create_form_url):
+    client.force_login(professor_user)
+    payload = {"form_name": "Empty Colors", "num_likert":"1","num_open_ended":"1",
+               "color_1":"","color_2":"","color_3":"","color_4":"","color_5":""}
+    resp = client.post(create_form_url, data=payload, follow=True)
+    cf = CourseForm.objects.get(name="Empty Colors")
+    assert (cf.color_1, cf.color_2, cf.color_3, cf.color_4, cf.color_5) == (
+        "#872729", "#C44B4B", "#F2F0EF", "#3D5A80", "#293241"
+    )
+
+#fails
+#check if duplicate names can happen
+def test_post_create_form_duplicate_names_same_course(client, professor_user, course, create_form_url):
+    client.force_login(professor_user)
+    payload = {"form_name": "DupTest", "num_likert":"1","num_open_ended":"1"}
+    client.post(create_form_url, data=payload)
+    with pytest.raises(IntegrityError):
+        CourseForm.objects.create(course=course, name="DupTest")
+
+#fails
+#check if forms can be instantiated in the past (known issue)
+def test_post_create_form_due_date_in_past(client, professor_user, course, create_form_url):
+    client.force_login(professor_user)
+    payload = {"form_name": "Past Date", "num_likert":"1","num_open_ended":"1",
+               "due_datetime":"2000-01-01T12:00"}
+    resp = client.post(create_form_url, data=payload, follow=True)
+    msgs = [m.message for m in get_messages(resp.wsgi_request)]
+    assert any("due date cannot be in the past" in m.lower() for m in msgs)
+
+#check if weird symbols mess up the form
+def test_post_create_form_unicode_name(client, professor_user, course, create_form_url):
+    client.force_login(professor_user)
+    payload = {"form_name": "Peer Eval ✅", "num_likert":"2","num_open_ended":"1"}
+    resp = client.post(create_form_url, data=payload, follow=True)
+    cf = CourseForm.objects.get(name="Peer Eval ✅")
+    assert cf is not None
+
+# ------------------- Endpoint Tests -------------------
+
+# GET requests
+
+#check if unlogged in users get moved
+def test_get_endpoint_requires_login(client, create_form_url):
+    resp = client.get(create_form_url)
+    assert resp.status_code in (301, 302)
+    assert "next=" in resp.url
+
+#check if owning professor can access form creation
+def test_get_endpoint_professor_access(client, professor_user, create_form_url):
+    client.force_login(professor_user)
+    resp = client.get(create_form_url)
+    assert resp.status_code == 200
+    # Check context variables exist
+    assert "default_colors" in resp.context
+    assert "forms" in resp.context
+
+#check if students can access form creation
+def test_get_endpoint_student_forbidden(client, student_user, create_form_url):
+    client.force_login(student_user)
+    resp = client.get(create_form_url, follow=True)
+    messages = [m.message for m in get_messages(resp.wsgi_request)]
+    assert any("Access denied" in m for m in messages)
+    assert resp.status_code == 200
+
+
+# POST requests
+
+#check if professors can create forms
+def test_post_endpoint_create_form_success(client, professor_user, create_form_url):
+    client.force_login(professor_user)
+    payload = {
+        "form_name": "Endpoint Test Form",
+        "num_likert": "2",
+        "num_open_ended": "1",
+        "self_evaluate": "on",
+    }
+    resp = client.post(create_form_url, data=payload, follow=True)
+    assert resp.status_code == 200
+    form = CourseForm.objects.get(name="Endpoint Test Form")
+    assert form.num_likert == 2
+    assert form.num_open_ended == 1
+
+#check if students can create forms (shouldn't be able to)
+def test_post_endpoint_student_forbidden(client, student_user, create_form_url):
+    client.force_login(student_user)
+    payload = {"form_name": "Student Try", "num_likert": "1", "num_open_ended": "0"}
+    resp = client.post(create_form_url, data=payload, follow=True)
+    assert resp.status_code == 200
+    assert CourseForm.objects.filter(name="Student Try").count() == 0
+    messages = [m.message for m in get_messages(resp.wsgi_request)]
+    assert any("Access denied" in m for m in messages)
+
+#check if messed up date can create a form
+def test_post_endpoint_invalid_data(client, professor_user, create_form_url):
+    client.force_login(professor_user)
+    payload = {"form_name": "Invalid Date Form", "due_datetime": "not-a-date"}
+    resp = client.post(create_form_url, data=payload, follow=True)
+    assert resp.status_code == 200
+    assert CourseForm.objects.filter(name="Invalid Date Form").count() == 0
+    messages = [m.message for m in get_messages(resp.wsgi_request)]
+    assert any("Invalid date/time" in m for m in messages)
+
+
+# Endpoint redirect behavior
+
+#check what happens after submitting a form
+def test_post_endpoint_redirects_to_course_page(client, professor_user, course):
+    client.force_login(professor_user)
+    url = reverse("create_form", args=[course.join_code])
+    payload = {"form_name": "Redirect Test", "num_likert": "1", "num_open_ended": "0"}
+    resp = client.post(url, data=payload)
+    assert resp.status_code in (301, 302)
+    assert course.join_code in resp.url
