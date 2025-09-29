@@ -67,7 +67,7 @@ A Django-powered peer‑review and assessment platform that allows instructors t
    pip install -r requirements.txt
    ```
 
-## 4. Obtain Google OAuth2 Credentials
+4. **Obtain Google OAuth2 Credentials**
 
  - Go to **[Google Cloud Console](https://console.cloud.google.com/)**.  
  - Create a new project (or select an existing one).  
@@ -81,7 +81,7 @@ A Django-powered peer‑review and assessment platform that allows instructors t
 
 ---
 
-## 5. Create Superuser & Register Credentials
+5. **Create Superuser & Register Credentials**
 
  - **Create a Django superuser**
 ```bash
@@ -126,6 +126,15 @@ Whenever you modify models:
 python manage.py makemigrations
 python manage.py migrate
 ```
+
+---
+
+## Test Scripts
+
+To run test scripts, naviagate to **CollabRate** directory and input,
+   ```bash
+   pytest
+   ```
 
 ---
 
@@ -179,4 +188,5 @@ python manage.py migrate
 ## License
 
 MIT License © 2025
+
 
