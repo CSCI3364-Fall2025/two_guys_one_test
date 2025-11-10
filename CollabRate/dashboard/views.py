@@ -18,6 +18,9 @@ from dashboard.models import Course
 from accounts.models import CustomUser
 
 
+def load_test():
+    return redirect('load_test')
+
 @login_required
 def dashboard(request):
     if request.user.user_type == CustomUser.PROFESSOR:

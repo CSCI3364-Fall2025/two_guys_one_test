@@ -104,6 +104,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'main.wsgi.application'
 
 
+ACCOUNT_RATE_LIMITS = {
+
+    "login_failed": None, # disable rate limiting on failed logins
+
+    "login": None, # disable rate limiting on all logins
+
+    "signup": None,
+
+    "email_verification": None,
+
+    "password_reset": None,
+
+}
+
+
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
