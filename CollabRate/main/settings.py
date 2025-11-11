@@ -105,17 +105,11 @@ WSGI_APPLICATION = 'main.wsgi.application'
 
 
 ACCOUNT_RATE_LIMITS = {
-
-    "login_failed": None, # disable rate limiting on failed logins
-
-    "login": None, # disable rate limiting on all logins
-
+    "login_failed": None,
+    "login": None,
     "signup": None,
-
     "email_verification": None,
-
     "password_reset": None,
-
 }
 
 
