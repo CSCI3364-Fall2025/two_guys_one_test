@@ -34,3 +34,55 @@ jobs:
           python manage.py migrate --noinput
           python manage.py check
           pytest
+  accessibility:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Setup Node for Pa11y
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Pa11y CI
+        run: npm install --global pa11y-ci
+
+      - name: Prepare Django app
+        env:
+          DJANGO_SETTINGS_MODULE: PeerAssess.settings
+        run: |
+          python manage.py migrate --noinput
+          python manage.py collectstatic --noinput
+
+      - name: Start Django server
+        env:
+          DJANGO_SETTINGS_MODULE: PeerAssess.settings
+        run: |
+          python manage.py runserver 0.0.0.0:8000 &
+          echo $! > django_server.pid
+          sleep 10
+
+      - name: Run Pa11y CI
+        run: pa11y-ci
+
+      - name: Stop Django server
+        if: always()
+        run: |
+          if [ -f django_server.pid ]; then
+            kill "$(cat django_server.pid)" || true
+          else
+            echo "No PID file, server was not started"
+          fi
